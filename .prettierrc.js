@@ -1,7 +1,9 @@
 module.exports = {
-  arrowParens: 'avoid',
+  arrowParens: "avoid",
   bracketSameLine: true,
-  bracketSpacing: false,
-  singleQuote: true,
-  trailingComma: 'all',
+  trailingComma: "es5",
+  printWidth: 120,
+  importOrder: ["^@core.*", "^@.*", "^[./]"],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
 };
