@@ -1,6 +1,6 @@
 import React from 'react';
-import {Text} from 'react-native';
+import { Login } from './src/features';
 
 export default function App() {
-  return <Text>Gasulerto</Text>;
+  return <Login />;
 }

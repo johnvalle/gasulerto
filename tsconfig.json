@@ -1,3 +1,11 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@core": ["./src/*"]
+    }
+  },
+  "include": ["src", "index.d.ts"],
+  "exclude": ["node_modules"],
   "extends": "@tsconfig/react-native/tsconfig.json"
 }
