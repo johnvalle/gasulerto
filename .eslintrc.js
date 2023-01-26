@@ -1,10 +1,12 @@
 module.exports = {
   root: true,
-  extends: ["@react-native-community", "airbnb/hooks", "airbnb", "airbnb-typescript"],
-  plugins: ["react", "react-hooks"],
+  extends: ["@react-native-community", "airbnb-typescript"],
+  plugins: ["react", "react-hooks", "import", "@typescript-eslint"],
+  parser: "@typescript-eslint/parser",
   parserOptions: {
     project: "./tsconfig.json",
   },
+  ignorePatterns: ["babel.config.js", ".eslintrc.js", "metro.config.js", "react-native.config.js"],
   rules: {
     "global-require": "off",
     // typescript-eslint overrides

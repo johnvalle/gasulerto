@@ -1,9 +1,9 @@
 module.exports = {
   arrowParens: "avoid",
   bracketSameLine: true,
-  trailingComma: "es5",
+  trailingComma: "none",
   printWidth: 120,
-  importOrder: ["^@core.*", "^@.*", "^[./]"],
+  importOrder: ["^@shopify.*", "^@core.*", "^@.*", "^[./]"],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
 };
