@@ -1,6 +1,14 @@
-import React from 'react';
-import { Login } from './src/features';
+import React from "react";
+
+import { ThemeProvider } from "@shopify/restyle";
+
+import theme from "./src/constants/theme";
+import { Login } from "./src/features";
 
 export default function App() {
-  return <Login />;
+  return (
+    <ThemeProvider theme={theme}>
+      <Login />
+    </ThemeProvider>
+  );
 }
