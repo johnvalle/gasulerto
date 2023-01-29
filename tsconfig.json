@@ -4,7 +4,8 @@
     "paths": {
       "@core/*": ["src/*"],
       "@components": ["src/components/index"],
-      "@constants/*": ["src/constants/*"]
+      "@constants/*": ["src/constants/*"],
+      "@assets/*": ["src/asserts/*"]
     }
   },
   "include": ["./src/*", "index.d.ts", "**/*.ts", "**/*.tsx"],

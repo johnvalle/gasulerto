@@ -1,63 +1,53 @@
 import { createTheme } from "@shopify/restyle";
 
 const palette = {
-  primaryDark: "#2F355B",
-  primaryLight: "#9FA2B5",
-  primary: "#6177FF",
-  danger: "#DA2D38",
-  warning: "#FFAD4E",
-  success: "#84E68D",
+  primaryDark: "#6579D6",
+  primaryLight: "#E0E6FF",
+  primary: "#91A0E2",
+  danger: "#EF4A6B",
+  warning: "#FDC93A",
+  success: "#D2E23D",
+  info: "#91A0E2",
   white: "#FFFFFF",
-  gray: "#EEEEEE"
+  gray: "#949494",
+  grayLight: "#DEDEDE",
+  black: "#000000"
 };
 
-enum Colors {
-  PRIMARY_DARK = "primaryDark",
-  PRIMARY_LIGHT = "primaryLight",
-  PRIMARY = "primary",
-  DANGER = "danger",
-  WARNING = "warning",
-  SUCCESS = "success",
-  WHITE = "white",
-  GRAY = "gray"
-}
+export const sizes = { "2xs": 8, xs: 12, sm: 16, md: 24, lg: 32, xl: 40, "2xl": 56 };
 
-enum Sizes {
-  XS = 10,
-  S = 16,
-  M = 24,
-  L = 32,
-  XL = 40,
-  XXL = 56
-}
+export const fontStyles = {
+  defaults: {
+    fontFamily: "Assistant-Regular",
+    fontSize: sizes.sm
+  },
+  smallBold: {
+    fontFamily: "Assistant-Bold",
+    fontSize: sizes.sm
+  },
+  mediumBold: {
+    fontFamily: "KulimPark-Bold",
+    fontSize: sizes.md
+  },
+  extraSmallThin: {
+    fontFamily: "Assistant-Light",
+    fontSize: sizes.xs
+  },
+  extraSmallMedium: {
+    fontFamily: "Assistant-Medium",
+    fontSize: sizes.xs
+  },
+  extraLargeBold: {
+    fontFamily: "KulimPark-Bold",
+    fontSize: sizes.xl
+  }
+};
 
 const theme = createTheme({
   colors: palette,
-  spacing: Sizes,
+  spacing: sizes,
   breakpoints: {},
-  textVariants: {
-    defaults: {
-      fontFamily: "Inter-Regular",
-      fontSize: Sizes.S,
-      color: Colors.PRIMARY_DARK
-    },
-    smallBold: {
-      fontFamily: "Inter-Bold",
-      fontSize: Sizes.S
-    },
-    mediumBold: {
-      fontFamily: "Inter-Bold",
-      fontSize: Sizes.M
-    },
-    extraSmallThin: {
-      fontFamily: "Inter-Thin",
-      fontSize: Sizes.XS
-    },
-    extraSmallMedium: {
-      fontFamily: "Inter-Medium",
-      fontSize: Sizes.XS
-    }
-  }
+  textVariants: fontStyles
 });
 
 export type Theme = typeof theme;

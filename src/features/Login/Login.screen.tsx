@@ -4,7 +4,7 @@ import { Box, Text } from "@core/components";
 
 import LoginImage from "@assets/images/login-bg.png";
 
-import styles from "./styles";
+import styles from "./Login.styles";
 
 export function Login() {
   return (
@@ -18,17 +18,17 @@ export function Login() {
           paddingHorizontal: 16,
           paddingBottom: 56
         }}>
-        <Text variant="mediumBold" color="primaryDark" textAlign="center">
+        <Text variant="extraLargeBold" color="primaryDark" textAlign="center">
           Gasulerto
         </Text>
-        <Box gap="S">
+        <Box gap="md">
           <TouchableOpacity style={styles.googleButton} onPressIn={() => console.log("google press")}>
-            <Text variant="smallBold" color="white" padding="XS" textAlign="center">
+            <Text variant="smallBold" color="white" textAlign="center">
               Sign in using Google
             </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => console.log("guest press")}>
-            <Text color="primaryLight" textAlign="center">
+            <Text color="gray" textAlign="center">
               Continue as a guest
             </Text>
           </TouchableOpacity>

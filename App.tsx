@@ -1,14 +1,21 @@
 import React from "react";
+import { StatusBar } from "react-native";
 
 import { ThemeProvider } from "@shopify/restyle";
 
-import theme from "./src/constants/theme";
-import { Login } from "./src/features";
+import { NavigationContainer } from "@react-navigation/native";
+
+import AuthenticatedStack from "@core/navigation/AuthenticatedStack";
+import UnauthenticatedStack from "@core/navigation/UnauthenticatedStack";
+
+import theme from "@constants/theme";
 
 export default function App() {
+  const isLoggedIn = true;
   return (
     <ThemeProvider theme={theme}>
-      <Login />
+      <StatusBar barStyle="dark-content" backgroundColor={"#FFFFFF"} />
+      <NavigationContainer>{isLoggedIn ? <AuthenticatedStack /> : <UnauthenticatedStack />}</NavigationContainer>
     </ThemeProvider>
   );
 }
