@@ -29,9 +29,12 @@ export default function NotificationCard(props: Props) {
       <NotificationIcon type={props.type} />
       <Box>
         <Text color="black">Gas leakage was detected</Text>
-        <Box flexDirection="row" gap="xs">
+        <Box flexDirection="row" gap="2xs">
           <Text variant="extraSmallMedium" color="gray">
             Warning
+          </Text>
+          <Text variant="extraSmallMedium" color="gray">
+            ·
           </Text>
           <Text variant="extraSmallMedium" color="gray">
             3m ago

@@ -1,6 +1,7 @@
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 
-import { authenticatedRoutes } from "@core/navigation/AuthenticatedStack";
+import { authenticatedTabRoutes } from "@core/navigation/AuthenticatedStack";
+import { AppScreen } from "@core/types/navigation";
 
 export const getTabIconOptions = ({
   route,
@@ -12,21 +13,21 @@ export const getTabIconOptions = ({
   };
   color: string;
 }) => {
-  const tabs = { ...authenticatedRoutes };
+  const tabs = { ...authenticatedTabRoutes };
   type TabNames = (typeof tabs)[number]["name"];
 
   const routeName = route.route.name as TabNames;
   let name = "";
 
-  if (routeName === "Dashboard") {
+  if (routeName === AppScreen.Dashboard) {
     name = "home-variant";
   }
 
-  if (routeName === "Notifications") {
+  if (routeName === AppScreen.Notifications) {
     name = "bell";
   }
 
-  if (routeName === "Settings") {
+  if (routeName === AppScreen.Settings) {
     name = "cog";
   }
 

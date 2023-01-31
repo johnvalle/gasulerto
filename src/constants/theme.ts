@@ -14,7 +14,7 @@ const palette = {
   black: "#000000"
 };
 
-export const sizes = { "2xs": 8, xs: 12, sm: 16, md: 24, lg: 32, xl: 40, "2xl": 56 };
+const sizes = { "2xs": 8, xs: 12, sm: 16, md: 24, lg: 32, xl: 40, "2xl": 56 };
 
 export const fontStyles = {
   defaults: {
@@ -29,6 +29,14 @@ export const fontStyles = {
     fontFamily: "KulimPark-Bold",
     fontSize: sizes.md
   },
+  mediumRegular: {
+    fontFamily: "Assistant-Regular",
+    fontSize: sizes.md
+  },
+  largeMedium: {
+    fontFamily: "KulimPark-SemiBold",
+    fontSize: sizes.lg
+  },
   extraSmallThin: {
     fontFamily: "Assistant-Light",
     fontSize: sizes.xs
@@ -39,7 +47,7 @@ export const fontStyles = {
   },
   extraLargeBold: {
     fontFamily: "KulimPark-Bold",
-    fontSize: sizes.xl
+    fontSize: sizes["2xl"]
   }
 };
 

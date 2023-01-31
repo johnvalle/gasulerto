@@ -1,10 +1,10 @@
 import { AppScreen } from "@core/types/navigation";
 
-import { Login } from "./Login.screen";
+import Alarm from "./Alarm.screen";
 
 export default {
-  name: AppScreen.Login,
-  component: Login,
+  name: AppScreen.Alarm,
+  component: Alarm,
   options: {
     headerShown: false
   }

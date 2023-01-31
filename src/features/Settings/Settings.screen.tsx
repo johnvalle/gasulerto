@@ -4,6 +4,8 @@ import { Text, Wrapper } from "@core/components";
 
 import SettingsPageBanner from "@assets/images/settings-page.png";
 
+import SettingItem from "./components/SettingItem";
+
 function Settings() {
   return (
     <Wrapper>
@@ -11,6 +13,7 @@ function Settings() {
       <Text variant="mediumBold" color="black" marginVertical="md">
         Settings
       </Text>
+      <SettingItem title="Gas leak threshold" description="Alarm when threshold is exceeded" />
     </Wrapper>
   );
 }

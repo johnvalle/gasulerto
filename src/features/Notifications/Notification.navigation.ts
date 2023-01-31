@@ -1,7 +1,9 @@
+import { AppScreen } from "@core/types/navigation";
+
 import Notifications from "./Notification.screen";
 
 export default {
-  name: "Notifications",
+  name: AppScreen.Notifications,
   component: Notifications,
   options: {
     headerShown: false,

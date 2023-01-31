@@ -34,6 +34,10 @@
       "sha1": "dc801c6badaa437e9ae77dcac54f315576bb35ca"
     },
     {
+      "path": "src/assets/fonts/KulimPark-SemiBold.ttf",
+      "sha1": "9fd3185830aa117d4b72d9333b51756ea88e0f45"
+    },
+    {
       "path": "src/assets/images/gas-detected.png",
       "sha1": "5e8608feb6bddb0bb693ba902c50cb2a47ab5da1"
     },
