@@ -27,6 +27,7 @@
 		818E15FC3C904132B4E13792 /* Assistant-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5AB86F298AA449C081D878FE /* Assistant-SemiBold.ttf */; };
 		521766BC377A42C997C1E1EB /* KulimPark-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E4E2E2F5643B48388CDAE831 /* KulimPark-Bold.ttf */; };
 		DAFFBB41DA64411EB08B73E1 /* KulimPark-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4615AE413CD140A0B7CE7C3C /* KulimPark-SemiBold.ttf */; };
+		53CF38F698934D5B8168E2E9 /* juicy-teamwork.gif in Resources */ = {isa = PBXBuildFile; fileRef = 5CCB91FB9D334529B3E1150B /* juicy-teamwork.gif */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 		5AB86F298AA449C081D878FE /* Assistant-SemiBold.ttf */ = {isa = PBXFileReference; name = "Assistant-SemiBold.ttf"; path = "../src/assets/fonts/Assistant-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		E4E2E2F5643B48388CDAE831 /* KulimPark-Bold.ttf */ = {isa = PBXFileReference; name = "KulimPark-Bold.ttf"; path = "../src/assets/fonts/KulimPark-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		4615AE413CD140A0B7CE7C3C /* KulimPark-SemiBold.ttf */ = {isa = PBXFileReference; name = "KulimPark-SemiBold.ttf"; path = "../src/assets/fonts/KulimPark-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5CCB91FB9D334529B3E1150B /* juicy-teamwork.gif */ = {isa = PBXFileReference; name = "juicy-teamwork.gif"; path = "../src/assets/images/juicy-teamwork.gif"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +193,7 @@
 				5AB86F298AA449C081D878FE /* Assistant-SemiBold.ttf */,
 				E4E2E2F5643B48388CDAE831 /* KulimPark-Bold.ttf */,
 				4615AE413CD140A0B7CE7C3C /* KulimPark-SemiBold.ttf */,
+				5CCB91FB9D334529B3E1150B /* juicy-teamwork.gif */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -305,6 +308,7 @@
 				818E15FC3C904132B4E13792 /* Assistant-SemiBold.ttf in Resources */,
 				521766BC377A42C997C1E1EB /* KulimPark-Bold.ttf in Resources */,
 				DAFFBB41DA64411EB08B73E1 /* KulimPark-SemiBold.ttf in Resources */,
+				53CF38F698934D5B8168E2E9 /* juicy-teamwork.gif in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -5,7 +5,9 @@
       "@core/*": ["src/*"],
       "@components": ["src/components/index"],
       "@constants/*": ["src/constants/*"],
-      "@assets/*": ["src/asserts/*"]
+      "@assets/*": ["src/assets/*"],
+      "@hooks/*": ["src/hooks/*"],
+      "@coreTypes/*": ["src/types/*"]
     }
   },
   "include": ["./src/*", "index.d.ts", "**/*.ts", "**/*.tsx"],

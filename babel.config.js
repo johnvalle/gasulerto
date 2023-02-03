@@ -8,7 +8,9 @@ module.exports = {
         alias: [
           { "@core": "./src/", "@constants": "./src/constants" },
           { "@components": "./src/components" },
-          { "@assets": "./src/assets" }
+          { "@assets": "./src/assets" },
+          { "@hooks": "./src/hooks" },
+          { "@coreTypes": "./src/types" }
         ],
         extensions: [".js", ".jsx", ".ts", ".tsx"]
       }
