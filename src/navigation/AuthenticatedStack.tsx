@@ -1,20 +1,18 @@
 import React from "react";
-import { View } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
-import { BottomTabBar, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { BottomTabBar, BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import theme from "@core/constants/theme";
 import Alarm from "@core/features/Alarm/Alarm.screen";
-import DashboardRoutes from "@core/features/Dashboard/Dashboard.navigation";
-import NotificationRoutes from "@core/features/Notifications/Notification.navigation";
+import Dashboard from "@core/features/Dashboard/Dashboard.screen";
 import Notifications from "@core/features/Notifications/Notification.screen";
-import SettingsRoutes from "@core/features/Settings/Settings.navigation";
+import Settings from "@core/features/Settings/Settings.screen";
 import { AppScreen } from "@core/types/navigation";
 import { getTabIconOptions } from "@core/utils/getTabIconOptions";
 
-export const authenticatedTabRoutes = [DashboardRoutes, NotificationRoutes, SettingsRoutes];
+import { Box } from "@components";
 
 const AuthStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -22,6 +20,12 @@ const Tab = createBottomTabNavigator();
 const renderIcon = (props: Parameters<typeof getTabIconOptions>[number]) => {
   return <Icon size={24} {...getTabIconOptions({ ...props })} />;
 };
+
+const CustomTabBar = (props: BottomTabBarProps) => (
+  <Box margin="sm" position="absolute" left={0} bottom={0} right={0}>
+    <BottomTabBar {...props} />
+  </Box>
+);
 
 const HomeTabs = () => {
   return (
@@ -38,19 +42,10 @@ const HomeTabs = () => {
           elevation: 2
         }
       })}
-      tabBar={props => (
-        <View
-          style={{
-            margin: theme.spacing.sm,
-            position: "absolute",
-            left: 0,
-            bottom: 0,
-            right: 0
-          }}>
-          <BottomTabBar {...props} />
-        </View>
-      )}>
+      tabBar={CustomTabBar}>
+      <Tab.Screen name={AppScreen.Dashboard} component={Dashboard} />
       <Tab.Screen name={AppScreen.Notifications} component={Notifications} />
+      <Tab.Screen name={AppScreen.Settings} component={Settings} />
     </Tab.Navigator>
   );
 };
