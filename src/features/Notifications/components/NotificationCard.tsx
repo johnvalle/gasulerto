@@ -9,7 +9,7 @@ type Props = {
   read: boolean;
 } & NotificationIconProps;
 
-export default function NotificationCard(props: Props) {
+const NotificationCard = (props: Props) => {
   const { read } = props;
 
   const bgColor = read ? "white" : "primaryLight";
@@ -43,4 +43,6 @@ export default function NotificationCard(props: Props) {
       </Box>
     </Box>
   );
-}
+};
+
+export default NotificationCard;

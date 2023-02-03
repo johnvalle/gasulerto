@@ -8,7 +8,7 @@ import GasDetected from "@assets/images/gas-detected.png";
 
 import styles from "./Alarm.styles";
 
-function Alarm() {
+const Alarm = () => {
   return (
     <Wrapper>
       <Box justifyContent="center" alignItems="center" paddingVertical="md">
@@ -36,6 +36,6 @@ function Alarm() {
       </Box>
     </Wrapper>
   );
-}
+};
 
 export default Alarm;

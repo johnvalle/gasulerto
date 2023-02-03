@@ -10,7 +10,7 @@ type Props = {
   title: string;
 };
 
-export default function SensorListItem(props: Props) {
+const SensorListItem = (props: Props) => {
   const { isHigh, value, title } = props;
 
   const arrowType = isHigh ? "arrow-up" : "arrow-down";
@@ -34,4 +34,6 @@ export default function SensorListItem(props: Props) {
       <Text color="gray">{value}</Text>
     </Box>
   );
-}
+};
+
+export default SensorListItem;

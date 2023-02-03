@@ -5,7 +5,7 @@ import { Box, Text, Wrapper } from "@core/components";
 import SensorCardItem from "./components/SensorCardItem";
 import SensorListItem from "./components/SensorListItem";
 
-export default function Dashboard() {
+const Dashboard = () => {
   return (
     <Wrapper>
       <Box width="100%" gap="sm">
@@ -33,4 +33,6 @@ export default function Dashboard() {
       </Box>
     </Wrapper>
   );
-}
+};
+
+export default Dashboard;

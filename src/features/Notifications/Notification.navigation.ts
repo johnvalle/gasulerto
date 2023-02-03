@@ -2,7 +2,7 @@ import { AppScreen } from "@core/types/navigation";
 
 import Notifications from "./Notification.screen";
 
-export default {
+const navigation = {
   name: AppScreen.Notifications,
   component: Notifications,
   options: {
@@ -10,3 +10,5 @@ export default {
     tabBarShowLabel: false
   }
 } as const;
+
+export default navigation;

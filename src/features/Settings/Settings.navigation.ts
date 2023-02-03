@@ -2,7 +2,7 @@ import { AppScreen } from "@core/types/navigation";
 
 import Settings from "./Settings.screen";
 
-export default {
+const navigation = {
   name: AppScreen.Settings,
   component: Settings,
   options: {
@@ -12,3 +12,5 @@ export default {
     }
   }
 } as const;
+
+export default navigation;

@@ -9,7 +9,9 @@ import theme from "@core/constants/theme";
 import Alarm from "@core/features/Alarm/Alarm.screen";
 import DashboardRoutes from "@core/features/Dashboard/Dashboard.navigation";
 import NotificationRoutes from "@core/features/Notifications/Notification.navigation";
+import Notifications from "@core/features/Notifications/Notification.screen";
 import SettingsRoutes from "@core/features/Settings/Settings.navigation";
+import { AppScreen } from "@core/types/navigation";
 import { getTabIconOptions } from "@core/utils/getTabIconOptions";
 
 export const authenticatedTabRoutes = [DashboardRoutes, NotificationRoutes, SettingsRoutes];
@@ -25,6 +27,7 @@ const HomeTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={route => ({
+        headerShown: false,
         tabBarIcon: ({ color }) => renderIcon({ route, color }),
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.grayLight,
@@ -47,9 +50,7 @@ const HomeTabs = () => {
           <BottomTabBar {...props} />
         </View>
       )}>
-      {authenticatedTabRoutes.map(({ name, component, options }) => (
-        <Tab.Screen key={name} children={component} name={name} options={options} />
-      ))}
+      <Tab.Screen name={AppScreen.Notifications} component={Notifications} />
     </Tab.Navigator>
   );
 };

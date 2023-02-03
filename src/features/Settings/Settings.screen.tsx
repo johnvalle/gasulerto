@@ -6,7 +6,7 @@ import SettingsPageBanner from "@assets/images/settings-page.png";
 
 import SettingItem from "./components/SettingItem";
 
-function Settings() {
+const Settings = () => {
   return (
     <Wrapper>
       <Image source={SettingsPageBanner} style={{ width: 300, height: 200 }} resizeMode="contain" />
@@ -16,6 +16,6 @@ function Settings() {
       <SettingItem title="Gas leak threshold" description="Alarm when threshold is exceeded" />
     </Wrapper>
   );
-}
+};
 
 export default Settings;

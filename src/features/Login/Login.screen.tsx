@@ -6,7 +6,7 @@ import LoginImage from "@assets/images/login-bg.png";
 
 import styles from "./Login.styles";
 
-export function Login() {
+const Login = () => {
   return (
     <ImageBackground source={LoginImage} style={{ width: "100%", height: "100%" }} resizeMode="cover">
       <View
@@ -22,7 +22,7 @@ export function Login() {
           Gasulerto
         </Text>
         <Box gap="md">
-          <TouchableOpacity style={styles.googleButton} onPressIn={() => console.log("google press")}>
+          <TouchableOpacity onPressIn={() => console.log("google press")} style={styles.googleButton}>
             <Text variant="smallBold" color="white" textAlign="center">
               Sign in using Google
             </Text>
@@ -36,4 +36,6 @@ export function Login() {
       </View>
     </ImageBackground>
   );
-}
+};
+
+export default Login;
