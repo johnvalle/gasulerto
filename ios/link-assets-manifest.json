@@ -2,44 +2,56 @@
   "migIndex": 1,
   "data": [
     {
-      "path": "src/assets/fonts/Inter-Black.ttf",
-      "sha1": "283fa65b96dc1f2d71c6504afb9610447bdcdf1b"
+      "path": "src/assets/fonts/Assistant-Bold.ttf",
+      "sha1": "bc0cbf687dd64b28f4fd5b4a0b8de50bac9fab71"
     },
     {
-      "path": "src/assets/fonts/Inter-Bold.ttf",
-      "sha1": "48747b7a60086f97af0d373febcbd1f1bee87f17"
+      "path": "src/assets/fonts/Assistant-ExtraBold.ttf",
+      "sha1": "b5ffcced9bab78fb7fbe8bfa1e2229f501dfaa48"
     },
     {
-      "path": "src/assets/fonts/Inter-ExtraBold.ttf",
-      "sha1": "bff772be6bca9895c6fdcd57e5d5be9a47f2e058"
+      "path": "src/assets/fonts/Assistant-ExtraLight.ttf",
+      "sha1": "924e46a771b47d8e15ae8b81646431e2a30cfc5e"
     },
     {
-      "path": "src/assets/fonts/Inter-ExtraLight.ttf",
-      "sha1": "421072aef8610cb0f79661b494442a4b9363b43f"
+      "path": "src/assets/fonts/Assistant-Light.ttf",
+      "sha1": "71e87fe9403fb86a9ec128594d59705ddd242ba0"
     },
     {
-      "path": "src/assets/fonts/Inter-Light.ttf",
-      "sha1": "dd9ec1ae67dd85143bacf7a3cb37e9f0ac979843"
+      "path": "src/assets/fonts/Assistant-Medium.ttf",
+      "sha1": "8b533cdcda8dd42032c2ee962d76988c554d10c3"
     },
     {
-      "path": "src/assets/fonts/Inter-Medium.ttf",
-      "sha1": "a418a8ba73bbcfa8c131c426ab836d78457afa9b"
+      "path": "src/assets/fonts/Assistant-Regular.ttf",
+      "sha1": "c9f93188102aff986e127fd71b48c6e6ef1cf538"
     },
     {
-      "path": "src/assets/fonts/Inter-Regular.ttf",
-      "sha1": "7237d9cf55f177702066a28a4dde1e4c7e8ab576"
+      "path": "src/assets/fonts/Assistant-SemiBold.ttf",
+      "sha1": "451921324281ffcce6072e6c8d0656dd1165528e"
     },
     {
-      "path": "src/assets/fonts/Inter-SemiBold.ttf",
-      "sha1": "431007da316de60d85174aeec9b8389b5c73e7d6"
+      "path": "src/assets/fonts/KulimPark-Bold.ttf",
+      "sha1": "dc801c6badaa437e9ae77dcac54f315576bb35ca"
     },
     {
-      "path": "src/assets/fonts/Inter-Thin.ttf",
-      "sha1": "297919d59c9ba4fa17251cdb9f06c26ca906e593"
+      "path": "src/assets/fonts/KulimPark-SemiBold.ttf",
+      "sha1": "9fd3185830aa117d4b72d9333b51756ea88e0f45"
+    },
+    {
+      "path": "src/assets/images/gas-detected.png",
+      "sha1": "5e8608feb6bddb0bb693ba902c50cb2a47ab5da1"
     },
     {
       "path": "src/assets/images/login-bg.png",
-      "sha1": "08ab161899dab09f5d935f93f03466fcd69b34b0"
+      "sha1": "5d9c41626d72a114c843fb990f8bf5ce1dfca984"
+    },
+    {
+      "path": "src/assets/images/notification-page.png",
+      "sha1": "52f8a7eef873c76e7ca40f0412c40f32757f0422"
+    },
+    {
+      "path": "src/assets/images/settings-page.png",
+      "sha1": "572c1ea91305c718d13f948c0cd852382f796cc6"
     }
   ]
 }
