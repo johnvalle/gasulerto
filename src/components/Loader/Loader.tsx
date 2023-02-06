@@ -4,9 +4,7 @@ import theme from "@core/constants/theme";
 
 import Loading from "@assets/images/juicy-teamwork.gif";
 
-import Box from "../Box";
-import Text from "../Text";
-import Wrapper from "../Wrapper";
+import { Box, Text, Wrapper } from "../Shopify";
 import styles from "./Loader.styles";
 
 type Props = {
@@ -16,7 +14,7 @@ type Props = {
 
 const defaultMessage = "Please wait while we get things ready for you.";
 
-const Loader = (props: Props) => {
+export const Loader = (props: Props) => {
   const { message = defaultMessage, isVisible = true } = props;
   return (
     <Modal visible={isVisible} transparent={true}>
@@ -47,5 +45,3 @@ const Loader = (props: Props) => {
     </Modal>
   );
 };
-
-export default Loader;
