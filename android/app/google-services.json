@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1019732544899",
+    "project_id": "gasulerto",
+    "storage_bucket": "gasulerto.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019732544899:android:5120ae5812afd74cc67ab6",
+        "android_client_info": {
+          "package_name": "com.gasulerto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1019732544899-5j78pqff0u695htbqpu49lah45741gpe.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.gasulerto",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "1019732544899-nipup4d5kbs8kaa1luri0du0k3k8ps0f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4vnm9LdHAiggbrsf890fx_iXtgBiGY90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1019732544899-nipup4d5kbs8kaa1luri0du0k3k8ps0f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

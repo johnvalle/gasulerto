@@ -2,10 +2,10 @@ import { ScrollView } from "react-native";
 
 import { Box, Text, Wrapper } from "@core/components";
 
-import SensorCardItem from "./components/SensorCardItem";
-import SensorListItem from "./components/SensorListItem";
+import { SensorCardItem } from "./SensorCardItem";
+import { SensorListItem } from "./SensorListItem";
 
-const Dashboard = () => {
+export const Dashboard = () => {
   return (
     <Wrapper>
       <Box width="100%" gap="sm">
@@ -34,5 +34,3 @@ const Dashboard = () => {
     </Wrapper>
   );
 };
-
-export default Dashboard;

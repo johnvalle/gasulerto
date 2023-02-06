@@ -9,7 +9,7 @@ type Props = {
   type: NotificationType;
 };
 
-export default function NotificationIcon(props: Props) {
+export const NotificationIcon = (props: Props) => {
   const { type } = props;
 
   const getIconName = () => {
@@ -33,6 +33,6 @@ export default function NotificationIcon(props: Props) {
       <Icon name={getIconName()} size={16} color={theme.colors.white} />
     </Box>
   );
-}
+};
 
 export type NotificationIconProps = Props;
