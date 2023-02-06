@@ -45,7 +45,7 @@ export const Login = () => {
       });
     } catch (error) {
       console.error(error);
-      console.error("Failed to login using Google");
+      throw new Error("Failed to login using Google");
     } finally {
       setIsLoading(false);
     }
@@ -70,7 +70,7 @@ export const Login = () => {
       });
     } catch (error) {
       console.error(error);
-      console.error("Failed to login anonymously");
+      throw Error("Failed to signin anonymously");
     } finally {
       setIsLoading(false);
     }
