@@ -19,6 +19,7 @@ export const Settings = () => {
     try {
       await auth().signOut();
       logOut();
+      useUserStore.persist.clearStorage();
     } catch (err) {
       console.error(err, "Failed to signout");
     } finally {
@@ -46,7 +47,9 @@ export const Settings = () => {
 const styles = StyleSheet.create({
   logoutButton: {
     width: "100%",
-    backgroundColor: theme.colors.grayLight,
+    backgroundColor: theme.colors.white,
+    borderColor: theme.colors.grayLight,
+    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: theme.spacing.xs,
     padding: theme.spacing.sm,
     margin: theme.spacing.sm

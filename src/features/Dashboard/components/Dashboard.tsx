@@ -1,14 +1,23 @@
+import React from "react";
 import { ScrollView } from "react-native";
 
 import { Box, Text, Wrapper } from "@core/components";
+import { useUserStore } from "@core/hooks";
 
 import { SensorCardItem } from "./SensorCardItem";
 import { SensorListItem } from "./SensorListItem";
 
 export const Dashboard = () => {
+  const { name } = useUserStore();
+  const userName = name ?? "User";
+
   return (
     <Wrapper>
       <Box width="100%" gap="sm">
+        <Text variant="mediumBold" color="black" marginVertical="md">
+          Dashboard
+        </Text>
+        <Text color="gray">Good to see you're safe, {userName}</Text>
         <Text color="black">Overview</Text>
         <Box gap="sm">
           <Text color="gray">Recent readings</Text>
