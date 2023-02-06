@@ -12,8 +12,8 @@ import UnauthenticatedStack from "@core/navigation/UnauthenticatedStack";
 import theme from "@constants/theme";
 
 export default function App() {
-  const { userId } = useUserStore();
-  const isLoggedIn = !!userId;
+  const { token } = useUserStore();
+  const isLoggedIn = !!token;
 
   return (
     <ThemeProvider theme={theme}>

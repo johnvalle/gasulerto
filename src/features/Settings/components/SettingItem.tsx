@@ -9,11 +9,11 @@ type Props = {
   description: string;
 };
 
-export default function SettingItem(props: Props) {
+export const SettingsItem = (props: Props) => {
   const { title, description } = props;
 
   return (
-    <TouchableOpacity style={{ width: "100%" }}>
+    <TouchableOpacity style={styles.item}>
       <Box
         paddingVertical="xs"
         flexDirection="row"
@@ -29,4 +29,10 @@ export default function SettingItem(props: Props) {
       </Box>
     </TouchableOpacity>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  item: {
+    width: "100%"
+  }
+});

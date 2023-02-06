@@ -5,10 +5,10 @@ import { BottomTabBar, BottomTabBarProps, createBottomTabNavigator } from "@reac
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import theme from "@core/constants/theme";
-import Alarm from "@core/features/Alarm/Alarm.screen";
-import Dashboard from "@core/features/Dashboard/Dashboard.screen";
-import Notifications from "@core/features/Notifications/Notification.screen";
-import Settings from "@core/features/Settings/Settings.screen";
+import { Alarm } from "@core/features/Alarm/";
+import { Dashboard } from "@core/features/Dashboard";
+import { Notifications } from "@core/features/Notifications";
+import { Settings } from "@core/features/Settings/";
 import { AppScreen } from "@core/types/navigation";
 import { getTabIconOptions } from "@core/utils/getTabIconOptions";
 

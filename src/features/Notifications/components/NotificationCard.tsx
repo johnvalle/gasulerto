@@ -3,13 +3,13 @@ import { StyleSheet } from "react-native";
 import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
 
-import NotificationIcon, { NotificationIconProps } from "./NotificationIcon";
+import { NotificationIcon, NotificationIconProps } from "./NotificationIcon";
 
 type Props = {
   read: boolean;
 } & NotificationIconProps;
 
-const NotificationCard = (props: Props) => {
+export const NotificationCard = (props: Props) => {
   const { read } = props;
 
   const bgColor = read ? "white" : "primaryLight";
@@ -44,5 +44,3 @@ const NotificationCard = (props: Props) => {
     </Box>
   );
 };
-
-export default NotificationCard;

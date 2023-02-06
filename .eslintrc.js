@@ -1,10 +1,10 @@
 module.exports = {
   root: true,
-  extends: ["@react-native-community", "airbnb-typescript"],
+  extends: ["@react-native-community"],
   plugins: ["react", "react-hooks", "import", "@typescript-eslint"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    project: "./tsconfig.json",
+    project: "./tsconfig.json"
   },
   ignorePatterns: ["babel.config.js", ".eslintrc.js", "metro.config.js", "react-native.config.js"],
   rules: {
@@ -26,6 +26,8 @@ module.exports = {
     "react/jsx-props-no-spreading": "off",
     "no-confusing-arrow": ["error", { allowParens: true, onlyOneSimpleParam: true }],
     "import/no-extraneous-dependencies": "off",
+    quotes: "off",
+    "comma-dangle": "off",
 
     // Unnecessary
     "react/jsx-one-expression-per-line": "off",
@@ -33,13 +35,16 @@ module.exports = {
     "object-curly-newline": "off",
     "import/prefer-default-export": "off",
     "import/extensions": "off",
+
+    // For react native to allow styles declaration after component declaration in same file
+    "no-use-before-define": ["error", { variables: false }]
   },
   overrides: [
     {
       files: ["*.ts", "*.tsx"], // Your TypeScript files extension
       parserOptions: {
-        project: ["./tsconfig.json"], // Specify it only for TypeScript files
-      },
-    },
-  ],
+        project: ["./tsconfig.json"] // Specify it only for TypeScript files
+      }
+    }
+  ]
 };

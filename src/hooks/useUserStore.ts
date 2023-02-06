@@ -5,6 +5,7 @@ import { Nullable } from "@coreTypes/generics/nullable";
 type User = {
   name: Nullable<string>;
   expiresOn: Nullable<number>;
+  token: Nullable<string>;
   userId: Nullable<string>;
   isAnonymous: boolean;
 };
@@ -14,7 +15,7 @@ type UserStore = {
   logOut: () => void;
 } & User;
 
-const defaultState = { name: null, expiresOn: null, userId: null, isAnonymous: false };
+const defaultState = { name: null, expiresOn: null, userId: null, token: null, isAnonymous: false };
 
 const useUserStore = create<UserStore>(set => ({
   ...defaultState,

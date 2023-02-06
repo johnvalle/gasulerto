@@ -10,7 +10,7 @@ type Props = {
   iconName: string;
 } & SensorData;
 
-const SensorCardItem = (props: Props) => {
+export const SensorCardItem = (props: Props) => {
   const { isHigh, title, value, iconName } = props;
 
   const indicatorIcon = isHigh ? "close-circle" : "check-circle";
@@ -43,5 +43,3 @@ const SensorCardItem = (props: Props) => {
     </Box>
   );
 };
-
-export default SensorCardItem;
