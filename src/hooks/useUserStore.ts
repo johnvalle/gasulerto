@@ -15,19 +15,27 @@ type User = {
   isAnonymous: boolean;
 };
 
-type UserStore = {
+export type UserStore = {
   setUser: (user: User) => void;
   logOut: () => void;
 } & User;
 
 const defaultState = { name: null, expiresOn: null, userId: null, token: null, isAnonymous: false };
 
-const useUserStore = create<UserStore>()(
+export const useUserStore = create<UserStore>()(
   persist(
     set => ({
       ...defaultState,
       setUser: (user: User) => set(user),
-      logOut: () => set(defaultState, true)
+      logOut: () => {
+        set({
+          name: null,
+          expiresOn: null,
+          token: null,
+          userId: null,
+          isAnonymous: false
+        });
+      }
     }),
     {
       name: STORAGE_NAME,
@@ -35,5 +43,3 @@ const useUserStore = create<UserStore>()(
     }
   )
 );
-
-export default useUserStore;

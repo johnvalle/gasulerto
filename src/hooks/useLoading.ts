@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const useLoading = (loading: boolean = false) => {
+export const useLoading = (loading: boolean = false) => {
   const [isLoading, setIsLoading] = useState(loading);
 
   return {
@@ -8,5 +8,3 @@ const useLoading = (loading: boolean = false) => {
     setIsLoading
   };
 };
-
-export default useLoading;
