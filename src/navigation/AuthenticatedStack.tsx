@@ -32,6 +32,7 @@ const HomeTabs = () => {
     <Tab.Navigator
       screenOptions={route => ({
         headerShown: false,
+        tabBarHideOnKeyboard: true,
         tabBarIcon: ({ color }) => renderIcon({ route, color }),
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.grayLight,
