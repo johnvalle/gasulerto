@@ -1,5 +1,6 @@
 import React from "react";
 import { StatusBar } from "react-native";
+import { ThemeProvider as MagnusUIProvider } from "react-native-magnus";
 
 import { ThemeProvider } from "@shopify/restyle";
 
@@ -11,10 +12,12 @@ import theme from "@constants/theme";
 export default function App() {
   return (
     <ThemeProvider theme={theme}>
-      <StatusBar barStyle="dark-content" backgroundColor={"#FFFFFF"} />
-      <ErrorBoundary>
-        <AppNavigation />
-      </ErrorBoundary>
+      <MagnusUIProvider>
+        <StatusBar barStyle="dark-content" backgroundColor={"#FFFFFF"} />
+        <ErrorBoundary>
+          <AppNavigation />
+        </ErrorBoundary>
+      </MagnusUIProvider>
     </ThemeProvider>
   );
 }

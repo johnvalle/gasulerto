@@ -1,38 +1,33 @@
-import { StyleSheet, TouchableOpacity } from "react-native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { PropsWithChildren } from "react";
+import { StyleSheet } from "react-native";
 
 import { Box, Text } from "@core/components";
-import theme from "@core/constants/theme";
 
 type Props = {
   title: string;
   description: string;
-};
+  onPress: () => void;
+} & PropsWithChildren;
 
 export const SettingsItem = (props: Props) => {
-  const { title, description } = props;
+  const { title, description, children } = props;
 
   return (
-    <TouchableOpacity style={styles.item}>
-      <Box
-        paddingVertical="xs"
-        flexDirection="row"
-        justifyContent="space-between"
-        borderTopWidth={StyleSheet.hairlineWidth}
-        borderBottomWidth={StyleSheet.hairlineWidth}
-        borderColor="grayLight">
+    <Box
+      width="100%"
+      borderTopWidth={StyleSheet.hairlineWidth}
+      borderBottomWidth={StyleSheet.hairlineWidth}
+      borderColor="grayLight"
+      paddingVertical="xs">
+      <Box flexDirection="row" justifyContent="space-between">
         <Box>
-          <Text color="black">{title}</Text>
+          <Text color="primary" variant="smallBold">
+            {title}
+          </Text>
           <Text color="gray">{description}</Text>
         </Box>
-        <Icon name="chevron-right" size={theme.spacing.md} color={theme.colors.danger} />
       </Box>
-    </TouchableOpacity>
+      {children}
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  item: {
-    width: "100%"
-  }
-});

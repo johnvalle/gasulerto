@@ -10,7 +10,9 @@
       "@coreTypes/*": ["src/types/*"]
     }
   },
+  "isolatedModules": false,
   "include": ["./src/*", "index.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"],
-  "extends": "@tsconfig/react-native/tsconfig.json"
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "typeRoots": ["./src/types"]
 }
