@@ -8,9 +8,10 @@ import theme from "@core/constants/theme";
 import { useAuth, useLoading } from "@core/hooks";
 
 import LoginImage from "@assets/images/login-bg.png";
+import { WEB_CLIENT_ID } from "@env";
 
 GoogleSignin.configure({
-  webClientId: "1019732544899-nipup4d5kbs8kaa1luri0du0k3k8ps0f.apps.googleusercontent.com"
+  webClientId: WEB_CLIENT_ID
 });
 
 export const Login = () => {

@@ -36,10 +36,10 @@ export const SettingsForm = (props: Props) => {
             label="Gas leak threshold"
             helperText="Alarms when threshold is exceeded"
             onBlur={onBlur}
-            value={value.toString()}
+            value={value?.toString()}
             isValid={!errors?.threshold?.message}
             errorMessage={errors?.threshold?.message}
-            onChangeText={text => onChange(Number(text))}
+            onChangeText={text => onChange(!text ? Number(text) : null)}
           />
         )}
       />
