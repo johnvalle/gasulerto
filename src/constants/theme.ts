@@ -21,6 +21,10 @@ export const fontStyles = {
     fontFamily: "Assistant-Regular",
     fontSize: sizes.sm
   },
+  smallThin: {
+    fontFamily: "Assistant-Light",
+    fontSize: sizes.sm
+  },
   smallBold: {
     fontFamily: "Assistant-Bold",
     fontSize: sizes.sm
