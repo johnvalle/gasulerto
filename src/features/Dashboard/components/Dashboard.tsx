@@ -1,7 +1,10 @@
 import React from "react";
 import { ScrollView } from "react-native";
 
+import firestore from "@react-native-firebase/firestore";
+
 import { Box, Text, Wrapper } from "@core/components";
+import { LoadingContext } from "@core/contexts/LoadingContext";
 import { useUserStore } from "@core/hooks";
 
 import { SensorCardItem } from "./SensorCardItem";
@@ -10,6 +13,25 @@ import { SensorListItem } from "./SensorListItem";
 export const Dashboard = () => {
   const { name } = useUserStore();
   const userName = name ?? "User";
+
+  const dashboardData = firestore().collection("dashboard").doc("sensor");
+  const { setIsLoading } = React.useContext(LoadingContext);
+
+  const getDashboardData = React.useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await dashboardData.get();
+      console.log({ data });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [dashboardData, setIsLoading]);
+
+  React.useEffect(() => {
+    getDashboardData();
+  }, []);
 
   return (
     <Wrapper>

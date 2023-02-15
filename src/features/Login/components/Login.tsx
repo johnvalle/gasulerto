@@ -1,22 +1,23 @@
-import React from "react";
+import React, { useContext } from "react";
 import { ImageBackground, StyleSheet, TouchableOpacity } from "react-native";
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-import { Box, Loader, Text } from "@core/components";
+import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
-import { useAuth, useLoading } from "@core/hooks";
+import { LoadingContext } from "@core/contexts/LoadingContext";
+import { useAuth } from "@core/hooks";
 
 import LoginImage from "@assets/images/login-bg.png";
-import { WEB_CLIENT_ID } from "@env";
+import { GOOGLE_CLIENT_ID } from "@env";
 
 GoogleSignin.configure({
-  webClientId: WEB_CLIENT_ID
+  webClientId: GOOGLE_CLIENT_ID
 });
 
 export const Login = () => {
   const { signInAnonymously, signInUsingGoogle } = useAuth();
-  const { isLoading, setIsLoading } = useLoading();
+  const { setIsLoading } = useContext(LoadingContext);
 
   const loginWithGoogle = async () => {
     try {
@@ -44,7 +45,6 @@ export const Login = () => {
 
   return (
     <ImageBackground source={LoginImage} style={styles.imageBackground} resizeMode="cover">
-      {isLoading ? <Loader /> : null}
       <Box
         flex={1}
         flexDirection="column"
