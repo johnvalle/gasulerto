@@ -1,67 +1,143 @@
 import React from "react";
 import { ScrollView } from "react-native";
-
-import firestore from "@react-native-firebase/firestore";
+import { Skeleton } from "react-native-magnus";
+import { useQueryClient } from "react-query";
+import MQTT from "sp-react-native-mqtt";
 
 import { Box, Text, Wrapper } from "@core/components";
+import { SENSOR_TYPES } from "@core/constants/sensor";
+import theme from "@core/constants/theme";
 import { LoadingContext } from "@core/contexts/LoadingContext";
 import { useUserStore } from "@core/hooks";
 
+import { UBIDOTS_API_KEY } from "@env";
+
+import { useSensorData } from "../hooks/useSensorData";
 import { SensorCardItem } from "./SensorCardItem";
+import { SensorDataChart } from "./SensorDataChart";
 import { SensorListItem } from "./SensorListItem";
 
 export const Dashboard = () => {
   const { name } = useUserStore();
   const userName = name ?? "User";
 
-  const dashboardData = firestore().collection("dashboard").doc("sensor");
   const { setIsLoading } = React.useContext(LoadingContext);
+  const {
+    sensorData: { gas },
+    latestData,
+    isSensorDataReady,
+    getSensorDescriptiveValue,
+    getSensorNumericValue
+  } = useSensorData();
 
-  const getDashboardData = React.useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const data = await dashboardData.get();
-      console.log({ data });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [dashboardData, setIsLoading]);
+  const fireDescription = latestData.fire ? "Fire detected" : "None";
+
+  // establish mqtt connection
+  // once connected, retrieve last dot data over http
+  // subscribe to last dot over mqtt
+  // on subscribe, if data received, invalidate queries or update data in client
+  const queryClient = useQueryClient();
+  /* create mqtt client */
+  MQTT.createClient({
+    uri: "mqtt://industrial.api.ubidots.com:1883",
+    clientId: "gasulerto",
+    auth: true,
+    user: UBIDOTS_API_KEY,
+    pass: ""
+  })
+    .then(function (client) {
+      client.on("closed", function () {
+        console.log("mqtt.event.closed");
+      });
+
+      client.on("error", function (msg) {
+        console.log("mqtt.event.error", msg);
+      });
+
+      client.on("message", function (msg) {
+        console.log("mqtt.event.message", msg);
+        queryClient.invalidateQueries({ queryKey: ["temperature", "humidity"] });
+      });
+
+      client.on("connect", function () {
+        console.log("connected");
+        // client.publish("/v1.6/devices/arduino-gasulerto/fire", "0", 0, false);
+        // client.publish("/v1.6/devices/arduino-gasulerto/temperature", "37.2", 0, false);
+        client.subscribe("/v1.6/devices/arduino-gasulerto/temperature", 0);
+      });
+
+      client.connect();
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
 
   React.useEffect(() => {
-    getDashboardData();
-  }, []);
+    console.log({ isSensorDataReady });
+    setIsLoading(!isSensorDataReady);
+  }, [isSensorDataReady, setIsLoading]);
 
   return (
     <Wrapper>
-      <Box width="100%" gap="sm">
-        <Text variant="mediumBold" color="black" marginVertical="md">
-          Dashboard
-        </Text>
-        <Text color="gray">Good to see you're safe, {userName}</Text>
-        <Text color="black">Overview</Text>
+      <ScrollView style={{ flex: 1, width: "100%" }}>
         <Box gap="sm">
-          <Text color="gray">Recent readings</Text>
-          <Box>
-            <SensorListItem title="Gas" value="100 PPM" isHigh={false} />
-            <SensorListItem title="Fire" value="None" isHigh={false} />
-            <SensorListItem title="Temperature" value="28°C" isHigh />
-            <SensorListItem title="Humidity" value="24%" isHigh={false} />
+          <Text variant="mediumBold" color="black">
+            Dashboard
+          </Text>
+          <Text color="gray">Good to see you're safe, {userName}</Text>
+          <Box flexDirection="row" justifyContent="space-between" alignItems="center">
+            <Text color="black">Overview</Text>
+          </Box>
+          {(!isSensorDataReady || !gas.data) && <Skeleton.Box mt="sm" h={200} bg={theme.colors.grayLight} />}
+          {isSensorDataReady && gas.data && (
+            <SensorDataChart
+              chartLabels={gas.data.chartLabels}
+              chartData={gas.data.chartData}
+              chartSymbolSuffix="PPM"
+            />
+          )}
+          <Box gap="sm">
+            <Text color="gray">Recent readings</Text>
+            <Box>
+              <SensorListItem title="Gas" {...getSensorNumericValue(SENSOR_TYPES.GAS, latestData.gas)} />
+              <SensorListItem title="Fire" value={fireDescription} isHigh={Boolean(latestData.fire)} />
+              <SensorListItem
+                title="Temperature"
+                {...getSensorNumericValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
+              />
+              <SensorListItem title="Humidity" {...getSensorNumericValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)} />
+            </Box>
+          </Box>
+          <Box gap="sm" paddingBottom="2xl">
+            <Text color="gray">Sensor summary</Text>
+            <ScrollView horizontal>
+              <Box gap="sm" flexDirection="row">
+                <SensorCardItem
+                  iconName="fire"
+                  title="Fire"
+                  value={fireDescription}
+                  isHigh={Boolean(latestData.fire)}
+                />
+                <SensorCardItem
+                  iconName="gas-cylinder"
+                  title="Gas"
+                  {...getSensorDescriptiveValue(SENSOR_TYPES.GAS, latestData.gas)}
+                />
+                <SensorCardItem
+                  iconName="thermometer"
+                  title="Temperature"
+                  {...getSensorDescriptiveValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
+                />
+                <SensorCardItem
+                  iconName="water"
+                  title="Humidity"
+                  {...getSensorDescriptiveValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)}
+                />
+              </Box>
+            </ScrollView>
           </Box>
         </Box>
-        <Box gap="sm">
-          <Text color="gray">Sensor summary</Text>
-          <ScrollView horizontal>
-            <Box gap="sm" flexDirection="row">
-              <SensorCardItem iconName="gas-cylinder" title="Gas" value="Low concentration" isHigh={false} />
-              <SensorCardItem iconName="fire" title="Fire" value="Fire detected" isHigh />
-              <SensorCardItem iconName="thermometer" title="Temperature" value="Low concentration" isHigh={false} />
-              <SensorCardItem iconName="water" title="Humidity" value="Low concentration" isHigh={false} />
-            </Box>
-          </ScrollView>
-        </Box>
-      </Box>
+      </ScrollView>
     </Wrapper>
   );
 };
