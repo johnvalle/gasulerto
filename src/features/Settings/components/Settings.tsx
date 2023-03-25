@@ -1,11 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
 
-import { Box, Loader, Text, Wrapper } from "@core/components";
+import { Box, Text, Wrapper } from "@core/components";
 import theme from "@core/constants/theme";
-import { useAuth, useLoading, useUserSettings } from "@core/hooks";
+import { LoadingContext } from "@core/contexts/LoadingContext";
+import { useAuth, useUserSettings } from "@core/hooks";
 
 import SettingsPageBanner from "@assets/images/settings-page.png";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +16,7 @@ import { SettingsForm } from "./SettingsForm";
 import { SettingsFormLoader } from "./SettingsFormLoader";
 
 export const Settings = () => {
-  const { isLoading, setIsLoading } = useLoading();
+  const { setIsLoading } = useContext(LoadingContext);
   const { signOut } = useAuth();
   const { updateUserSettings, userSettings, isLoading: isSettingsLoading } = useUserSettings();
 
@@ -48,7 +49,6 @@ export const Settings = () => {
       <ScrollView>
         <KeyboardAvoidingView>
           <Box>
-            {isLoading && <Loader />}
             <Image source={SettingsPageBanner} style={styles.imageBanner} resizeMode="contain" />
             <Text variant="mediumBold" color="black" marginVertical="md" textAlign="center">
               Settings

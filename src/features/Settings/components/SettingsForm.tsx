@@ -39,7 +39,7 @@ export const SettingsForm = (props: Props) => {
             value={value?.toString()}
             isValid={!errors?.threshold?.message}
             errorMessage={errors?.threshold?.message}
-            onChangeText={text => onChange(!text ? Number(text) : null)}
+            onChangeText={text => onChange(text ? Number(text) : "")}
           />
         )}
       />

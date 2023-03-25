@@ -4,7 +4,8 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 
 import { Loader } from "@core/components";
-import { useAuth, useLoading, useUserStore } from "@core/hooks";
+import { LoadingContext } from "@core/contexts/LoadingContext";
+import { useAuth, useUserStore } from "@core/hooks";
 import { UserStore } from "@core/hooks/useUserStore";
 
 import AuthenticatedStack from "./AuthenticatedStack";
@@ -12,7 +13,7 @@ import UnauthenticatedStack from "./UnauthenticatedStack";
 
 export const AppNavigation = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const { isLoading, setIsLoading } = useLoading(true);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   const { signOut } = useAuth();
 
@@ -39,7 +40,9 @@ export const AppNavigation = () => {
   return (
     <>
       {isLoading ? <Loader /> : null}
-      <NavigationContainer>{isLoggedIn ? <AuthenticatedStack /> : <UnauthenticatedStack />}</NavigationContainer>
+      <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
+        <NavigationContainer>{isLoggedIn ? <AuthenticatedStack /> : <UnauthenticatedStack />}</NavigationContainer>
+      </LoadingContext.Provider>
     </>
   );
 };

@@ -27,7 +27,7 @@ export const SensorListItem = (props: Props) => {
       paddingVertical="xs">
       <Box flexDirection="row" alignItems="center" gap="sm">
         <Icon name={arrowType} size={theme.spacing.md} color={arrowColor} />
-        <Text variant="smallBold" color="primaryDark">
+        <Text variant="smallBold" color="gray">
           {title}
         </Text>
       </Box>

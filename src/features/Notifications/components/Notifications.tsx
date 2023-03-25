@@ -18,9 +18,9 @@ export const Notifications = () => {
       <Box maxHeight={styles.scrollViewContainer.height} width="100%">
         <ScrollView>
           <Box flexDirection="column" gap="2xs">
-            <NotificationCard read={false} type="info" />
-            <NotificationCard read={true} type="warning" />
-            <NotificationCard read={true} type="danger" />
+            <NotificationCard read={false} type="info" message="Your system is now updated." />
+            <NotificationCard read={true} type="warning" message="Temperature threshold is almost exceeded." />
+            <NotificationCard read={true} type="danger" message="Gas leak detected." />
           </Box>
         </ScrollView>
       </Box>

@@ -43,6 +43,7 @@ export const useUserSettings = () => {
         return;
       }
       await settings.doc(id).set({ threshold: 300, primaryContact: { name: "911 Services", number: "911" } });
+      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       console.error("Failed to initialize user settings", error);
