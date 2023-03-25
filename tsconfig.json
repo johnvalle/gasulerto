@@ -7,12 +7,13 @@
       "@constants/*": ["src/constants/*"],
       "@assets/*": ["src/assets/*"],
       "@hooks/*": ["src/hooks/*"],
-      "@coreTypes/*": ["src/types/*"]
+      "@coreTypes/*": ["src/types/*"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "isolatedModules": false,
   "include": ["./src/*", "index.d.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "functions"],
   "extends": "@tsconfig/react-native/tsconfig.json",
   "typeRoots": ["./src/types"]
 }
