@@ -27,7 +27,7 @@ export const Loader = (props: Props) => {
             </Box>
           </Box>
           <Box paddingVertical="sm" gap="sm">
-            <Text variant="largeMedium" textAlign="center" color="primary">
+            <Text variant="largeMedium" textAlign="center" color="primaryDark">
               Almost there!
             </Text>
             <Text color="gray" textAlign="center">

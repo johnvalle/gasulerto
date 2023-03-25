@@ -10,7 +10,8 @@ module.exports = {
           { "@components": "./src/components" },
           { "@assets": "./src/assets" },
           { "@hooks": "./src/hooks" },
-          { "@coreTypes": "./src/types" }
+          { "@coreTypes": "./src/types" },
+          { "@utils": "./src/utils" }
         ],
         extensions: [".js", ".jsx", ".ts", ".tsx"]
       }

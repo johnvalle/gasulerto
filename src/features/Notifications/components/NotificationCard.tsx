@@ -7,10 +7,11 @@ import { NotificationIcon, NotificationIconProps } from "./NotificationIcon";
 
 type Props = {
   read: boolean;
+  message: string;
 } & NotificationIconProps;
 
 export const NotificationCard = (props: Props) => {
-  const { read } = props;
+  const { read, type, message } = props;
 
   const bgColor = read ? "white" : "primaryLight";
   const borderWidth = read ? StyleSheet.hairlineWidth : 0;
@@ -28,10 +29,10 @@ export const NotificationCard = (props: Props) => {
       borderWidth={borderWidth}>
       <NotificationIcon type={props.type} />
       <Box>
-        <Text color="black">Gas leakage was detected</Text>
+        <Text color="black">{message}</Text>
         <Box flexDirection="row" gap="2xs">
-          <Text variant="extraSmallMedium" color="gray">
-            Warning
+          <Text variant="extraSmallMedium" color="gray" textTransform="capitalize">
+            {type}
           </Text>
           <Text variant="extraSmallMedium" color="gray">
             ·
