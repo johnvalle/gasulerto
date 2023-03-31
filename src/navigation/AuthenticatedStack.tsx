@@ -9,12 +9,12 @@ import { Alarm } from "@core/features/Alarm/";
 import { Dashboard } from "@core/features/Dashboard";
 import { Notifications } from "@core/features/Notifications";
 import { Settings } from "@core/features/Settings/";
-import { AppScreen } from "@core/types/navigation";
+import { AppScreen, RootStackParamList } from "@core/types/navigation";
 import { getTabIconOptions } from "@core/utils/getTabIconOptions";
 
 import { Box } from "@components";
 
-const AuthStack = createNativeStackNavigator();
+const AuthStack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
 const renderIcon = (props: Parameters<typeof getTabIconOptions>[number]) => {
@@ -30,6 +30,7 @@ const CustomTabBar = (props: BottomTabBarProps) => (
 const HomeTabs = () => {
   return (
     <Tab.Navigator
+      initialRouteName={AppScreen.Dashboard}
       screenOptions={route => ({
         headerShown: false,
         tabBarHideOnKeyboard: true,
@@ -54,8 +55,8 @@ const HomeTabs = () => {
 export default function AuthenticatedStack() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
-      <AuthStack.Screen name="Home" component={HomeTabs} />
-      <AuthStack.Screen name="Alarm" component={Alarm} />
+      <AuthStack.Screen name={AppScreen.Alarm} component={Alarm} />
+      <AuthStack.Screen name={AppScreen.Home} component={HomeTabs} />
     </AuthStack.Navigator>
   );
 }
