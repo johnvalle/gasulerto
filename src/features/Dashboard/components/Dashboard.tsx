@@ -1,12 +1,10 @@
 import React from "react";
 import { ScrollView } from "react-native";
-import { Skeleton } from "react-native-magnus";
 import { useQueryClient } from "react-query";
 import MQTT from "sp-react-native-mqtt";
 
 import { Box, Text, Wrapper } from "@core/components";
 import { SENSOR_TYPES } from "@core/constants/sensor";
-import theme from "@core/constants/theme";
 import { LoadingContext } from "@core/contexts/LoadingContext";
 import { useUserStore } from "@core/hooks";
 
@@ -16,6 +14,7 @@ import { useSensorData } from "../hooks/useSensorData";
 import { SensorCardItem } from "./SensorCardItem";
 import { SensorDataChart } from "./SensorDataChart";
 import { SensorListItem } from "./SensorListItem";
+import * as Skeleton from "./Skeleton";
 
 export const Dashboard = () => {
   const { name } = useUserStore();
@@ -73,9 +72,10 @@ export const Dashboard = () => {
     });
 
   React.useEffect(() => {
-    console.log({ isSensorDataReady });
-    setIsLoading(!isSensorDataReady);
-  }, [isSensorDataReady, setIsLoading]);
+    if (isSensorDataReady && gas.data) {
+      setIsLoading(false);
+    }
+  }, [isSensorDataReady, setIsLoading, gas.data]);
 
   return (
     <Wrapper>
@@ -88,7 +88,7 @@ export const Dashboard = () => {
           <Box flexDirection="row" justifyContent="space-between" alignItems="center">
             <Text color="black">Overview</Text>
           </Box>
-          {(!isSensorDataReady || !gas.data) && <Skeleton.Box mt="sm" h={200} bg={theme.colors.grayLight} />}
+          {(!isSensorDataReady || !gas.data) && <Skeleton.Chart />}
           {isSensorDataReady && gas.data && (
             <SensorDataChart
               chartLabels={gas.data.chartLabels}
@@ -99,40 +99,59 @@ export const Dashboard = () => {
           <Box gap="sm">
             <Text color="gray">Recent readings</Text>
             <Box>
-              <SensorListItem title="Gas" {...getSensorNumericValue(SENSOR_TYPES.GAS, latestData.gas)} />
-              <SensorListItem title="Fire" value={fireDescription} isHigh={Boolean(latestData.fire)} />
-              <SensorListItem
-                title="Temperature"
-                {...getSensorNumericValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
-              />
-              <SensorListItem title="Humidity" {...getSensorNumericValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)} />
+              {isSensorDataReady ? (
+                <>
+                  <SensorListItem title="Gas" {...getSensorNumericValue(SENSOR_TYPES.GAS, latestData.gas)} />
+                  <SensorListItem title="Fire" value={fireDescription} isHigh={Boolean(latestData.fire)} />
+                  <SensorListItem
+                    title="Temperature"
+                    {...getSensorNumericValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
+                  />
+                  <SensorListItem
+                    title="Humidity"
+                    {...getSensorNumericValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)}
+                  />
+                </>
+              ) : (
+                Array.from({ length: 4 }).map((_, idx) => <Skeleton.ListItem key={idx} />)
+              )}
             </Box>
           </Box>
           <Box gap="sm" paddingBottom="2xl">
             <Text color="gray">Sensor summary</Text>
             <ScrollView horizontal>
               <Box gap="sm" flexDirection="row">
-                <SensorCardItem
-                  iconName="fire"
-                  title="Fire"
-                  value={fireDescription}
-                  isHigh={Boolean(latestData.fire)}
-                />
-                <SensorCardItem
-                  iconName="gas-cylinder"
-                  title="Gas"
-                  {...getSensorDescriptiveValue(SENSOR_TYPES.GAS, latestData.gas)}
-                />
-                <SensorCardItem
-                  iconName="thermometer"
-                  title="Temperature"
-                  {...getSensorDescriptiveValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
-                />
-                <SensorCardItem
-                  iconName="water"
-                  title="Humidity"
-                  {...getSensorDescriptiveValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)}
-                />
+                {isSensorDataReady ? (
+                  <>
+                    <SensorCardItem
+                      iconName="fire"
+                      title="Fire"
+                      value={fireDescription}
+                      isHigh={Boolean(latestData.fire)}
+                    />
+                    <SensorCardItem
+                      iconName="gas-cylinder"
+                      title="Gas"
+                      {...getSensorDescriptiveValue(SENSOR_TYPES.GAS, latestData.gas)}
+                    />
+                    <SensorCardItem
+                      iconName="thermometer"
+                      title="Temperature"
+                      {...getSensorDescriptiveValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
+                    />
+                    <SensorCardItem
+                      iconName="water"
+                      title="Humidity"
+                      {...getSensorDescriptiveValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)}
+                    />
+                  </>
+                ) : (
+                  <>
+                    {Array.from({ length: 2 }).map((_, idx) => (
+                      <Skeleton.CardItem key={idx} />
+                    ))}
+                  </>
+                )}
               </Box>
             </ScrollView>
           </Box>

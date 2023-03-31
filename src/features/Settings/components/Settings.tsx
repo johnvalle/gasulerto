@@ -2,11 +2,12 @@ import React, { useContext } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { Box, Text, Wrapper } from "@core/components";
 import theme from "@core/constants/theme";
 import { LoadingContext } from "@core/contexts/LoadingContext";
-import { useAuth, useUserSettings } from "@core/hooks";
+import { useAuth, useUserSettings, useUserStore } from "@core/hooks";
 
 import SettingsPageBanner from "@assets/images/settings-page.png";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +17,7 @@ import { SettingsForm } from "./SettingsForm";
 import { SettingsFormLoader } from "./SettingsFormLoader";
 
 export const Settings = () => {
+  const { isAnonymous } = useUserStore();
   const { setIsLoading } = useContext(LoadingContext);
   const { signOut } = useAuth();
   const { updateUserSettings, userSettings, isLoading: isSettingsLoading } = useUserSettings();
@@ -53,6 +55,34 @@ export const Settings = () => {
             <Text variant="mediumBold" color="black" marginVertical="md" textAlign="center">
               Settings
             </Text>
+            {isAnonymous && (
+              <Box
+                gap="xs"
+                py="2xs"
+                mb="xs"
+                borderTopWidth={StyleSheet.hairlineWidth}
+                borderBottomWidth={StyleSheet.hairlineWidth}
+                borderColor="grayLight"
+                alignItems="center"
+                flexDirection="row">
+                <Box
+                  backgroundColor="warning"
+                  p="2xs"
+                  borderRadius={theme.spacing["2xl"]}
+                  justifyContent="center"
+                  alignItems="center">
+                  <Icon name="lock" size={theme.spacing.md} color={theme.colors.black} />
+                </Box>
+                <Box>
+                  <Text color="black" variant="extraSmallMedium">
+                    Settings locked
+                  </Text>
+                  <Text color="gray" variant="extraSmallThin">
+                    Create an account using Google to update and save settings.
+                  </Text>
+                </Box>
+              </Box>
+            )}
             {!userSettings && isSettingsLoading ? (
               <SettingsFormLoader />
             ) : (
@@ -61,10 +91,11 @@ export const Settings = () => {
               </FormProvider>
             )}
             <Button
-              bg={theme.colors.gray}
+              color={theme.colors.primaryDark}
+              bg={theme.colors.primaryLight}
               w="100%"
               mt={theme.spacing.xl}
-              onPress={() => signOutUser()}
+              onPress={signOutUser}
               {...theme.textVariants.smallBold}
               disabled={isSettingsLoading}>
               Logout
