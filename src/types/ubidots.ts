@@ -1,18 +1,13 @@
-import { Nullable } from "@coreTypes/generics/nullable";
-
-export type UbidotsApiQueryParams = {
-  page_size?: number;
-  start_date?: number;
+export type DataResamplePayload = {
+  variables: string[];
+  aggregation: string;
+  period: string;
+  join_dataframes: boolean;
+  start?: number;
+  end?: number;
 };
 
-export type BaseUbidotsResults = {
-  created_at: number;
-  timestamp: number;
-  value: number;
-};
-
-export type BaseUbidotsResponse = {
-  next: Nullable<string>;
-  previous: Nullable<string>;
-  results: BaseUbidotsResults[];
+export type DataResampleResponse = {
+  results: Array<(number | null)[]>;
+  columns: string[];
 };
