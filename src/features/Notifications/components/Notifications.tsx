@@ -1,3 +1,4 @@
+import React from "react";
 import { Image, ScrollView, StyleSheet } from "react-native";
 import { Dimensions } from "react-native";
 
@@ -8,11 +9,11 @@ import NotificationPageBanner from "@assets/images/notification-page.png";
 
 import { NotificationCard } from "./NotificationCard";
 
-export const Notifications = () => {
+export const Notifications = React.memo(() => {
   return (
     <Wrapper>
       <Image source={NotificationPageBanner} style={styles.bannerImage} resizeMode="contain" />
-      <Text variant="mediumBold" color="black" marginVertical="md">
+      <Text variant="largeMedium" color="black" marginVertical="md">
         Notifications
       </Text>
       <Box maxHeight={styles.scrollViewContainer.height} width="100%">
@@ -26,7 +27,7 @@ export const Notifications = () => {
       </Box>
     </Wrapper>
   );
-};
+});
 
 const paddedDeviceHeight = Dimensions.get("window").height - theme.spacing.lg;
 const bannerText = theme.spacing.lg + theme.spacing.md; // space occupied by banner text

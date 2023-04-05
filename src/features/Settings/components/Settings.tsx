@@ -16,7 +16,7 @@ import { SettingsFormInput, SettingsFormResolver } from "../types/SettingsFormIn
 import { SettingsForm } from "./SettingsForm";
 import { SettingsFormLoader } from "./SettingsFormLoader";
 
-export const Settings = () => {
+export const Settings = React.memo(() => {
   const { isAnonymous } = useUserStore();
   const { setIsLoading } = useContext(LoadingContext);
   const { signOut } = useAuth();
@@ -52,7 +52,7 @@ export const Settings = () => {
         <KeyboardAvoidingView>
           <Box>
             <Image source={SettingsPageBanner} style={styles.imageBanner} resizeMode="contain" />
-            <Text variant="mediumBold" color="black" marginVertical="md" textAlign="center">
+            <Text variant="largeMedium" color="black" marginVertical="md" textAlign="center">
               Settings
             </Text>
             {isAnonymous && (
@@ -105,7 +105,7 @@ export const Settings = () => {
       </ScrollView>
     </Wrapper>
   );
-};
+});
 
 const styles = StyleSheet.create({
   logoutButton: {

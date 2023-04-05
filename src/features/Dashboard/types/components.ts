@@ -1,5 +1,6 @@
+export type SensorRange = "low" | "med" | "high";
+
 export type SensorData = {
-  isHigh: boolean;
   title: string;
   value: string;
 };
