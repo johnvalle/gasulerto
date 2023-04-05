@@ -5,16 +5,14 @@ import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
 
 type Props = {
-  isHigh: boolean;
   value: string;
   title: string;
+  iconName: string;
+  iconColor: string;
 };
 
 export const SensorListItem = (props: Props) => {
-  const { isHigh, value, title } = props;
-
-  const arrowType = isHigh ? "arrow-up" : "arrow-down";
-  const arrowColor = isHigh ? theme.colors.danger : theme.colors.success;
+  const { value, title, iconName, iconColor } = props;
 
   return (
     <Box
@@ -26,7 +24,7 @@ export const SensorListItem = (props: Props) => {
       borderColor="grayLight"
       paddingVertical="xs">
       <Box flexDirection="row" alignItems="center" gap="sm">
-        <Icon name={arrowType} size={theme.spacing.md} color={arrowColor} />
+        <Icon name={iconName} size={theme.spacing.md} color={iconColor} />
         <Text variant="smallBold" color="gray">
           {title}
         </Text>

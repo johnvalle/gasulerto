@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import React, { useEffect } from "react";
+import React from "react";
 import { Dimensions, ScrollView, StyleSheet } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
@@ -12,7 +12,7 @@ type Props = {
   chartSymbolSuffix: string;
 };
 
-export const SensorDataChart = (props: Props) => {
+export const SensorDataChart = React.memo((props: Props) => {
   const { chartData, chartLabels, chartSymbolSuffix } = props;
 
   const formattedChartLabels = chartLabels.length
@@ -33,7 +33,7 @@ export const SensorDataChart = (props: Props) => {
           labels: formattedChartLabels,
           datasets: [
             {
-              data: chartData.splice(0, 50),
+              data: chartData,
               color: () => theme.colors.primaryDark,
               strokeDashArray: [4],
               strokeWidth: 1
@@ -44,7 +44,7 @@ export const SensorDataChart = (props: Props) => {
           return (
             <Box key={params.index} position="absolute" style={{ top: params.y - 18, left: params.x }}>
               <Text color="gray" variant="extraSmallMedium">
-                {params.indexData}
+                {params.indexData.toFixed(1)}
               </Text>
             </Box>
           );
@@ -73,4 +73,4 @@ export const SensorDataChart = (props: Props) => {
       />
     </ScrollView>
   );
-};
+});

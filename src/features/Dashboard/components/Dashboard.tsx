@@ -1,115 +1,123 @@
-import React from "react";
-import { ScrollView } from "react-native";
-import { useQueryClient } from "react-query";
-import MQTT from "sp-react-native-mqtt";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import React, { useEffect, useMemo, useState } from "react";
+import { ScrollView, StyleSheet } from "react-native";
+import { useMutation } from "react-query";
 
 import { Box, Text, Wrapper } from "@core/components";
-import { SENSOR_TYPES } from "@core/constants/sensor";
-import { LoadingContext } from "@core/contexts/LoadingContext";
+import { VARIABLE_ID } from "@core/constants/api";
+import { MEASUREMENTS } from "@core/constants/sensor";
+import theme from "@core/constants/theme";
 import { useUserStore } from "@core/hooks";
+import { useUbidotsStore } from "@core/hooks/useUbidotsStore";
+import {
+  getFireDescriptiveValue,
+  getGasDescriptiveValue,
+  getHumidityDescriptiveValue,
+  getTemperatureDescriptiveValue
+} from "@core/utils/sensor";
 
-import { UBIDOTS_API_KEY } from "@env";
-
-import { useSensorData } from "../hooks/useSensorData";
+import { getUbidotsDataResample } from "../api/getUbidotsDataResample";
+import { ChartTimePills } from "./ChartTimePills";
 import { SensorCardItem } from "./SensorCardItem";
 import { SensorDataChart } from "./SensorDataChart";
 import { SensorListItem } from "./SensorListItem";
 import * as Skeleton from "./Skeleton";
 
-export const Dashboard = () => {
+dayjs.extend(relativeTime);
+
+export const Dashboard = React.memo(() => {
   const { name } = useUserStore();
-  const userName = name ?? "User";
+  const [latestData, isConnected, lastActive] = useUbidotsStore(state => [
+    state.latestData,
+    state.isConnected,
+    state.lastActive
+  ]);
 
-  const { setIsLoading } = React.useContext(LoadingContext);
-  const {
-    sensorData: { gas },
-    latestData,
-    isSensorDataReady,
-    getSensorDescriptiveValue,
-    getSensorNumericValue
-  } = useSensorData();
+  const isMoreThanMinuteInactive = Boolean(dayjs().diff(dayjs(lastActive), "m"));
+  const dataResampleMutation = useMutation(getUbidotsDataResample);
+  const [timeResample, setTimeResample] = useState(5);
 
-  const fireDescription = latestData.fire ? "Fire detected" : "None";
-
-  // establish mqtt connection
-  // once connected, retrieve last dot data over http
-  // subscribe to last dot over mqtt
-  // on subscribe, if data received, invalidate queries or update data in client
-  const queryClient = useQueryClient();
-  /* create mqtt client */
-  MQTT.createClient({
-    uri: "mqtt://industrial.api.ubidots.com:1883",
-    clientId: "gasulerto",
-    auth: true,
-    user: UBIDOTS_API_KEY,
-    pass: ""
-  })
-    .then(function (client) {
-      client.on("closed", function () {
-        console.log("mqtt.event.closed");
-      });
-
-      client.on("error", function (msg) {
-        console.log("mqtt.event.error", msg);
-      });
-
-      client.on("message", function (msg) {
-        console.log("mqtt.event.message", msg);
-        queryClient.invalidateQueries({ queryKey: ["temperature", "humidity"] });
-      });
-
-      client.on("connect", function () {
-        console.log("connected");
-        // client.publish("/v1.6/devices/arduino-gasulerto/fire", "0", 0, false);
-        // client.publish("/v1.6/devices/arduino-gasulerto/temperature", "37.2", 0, false);
-        client.subscribe("/v1.6/devices/arduino-gasulerto/temperature", 0);
-      });
-
-      client.connect();
-    })
-    .catch(function (err) {
-      console.log(err);
+  useEffect(() => {
+    dataResampleMutation.mutateAsync({
+      variables: [VARIABLE_ID.GAS],
+      aggregation: "mean",
+      period: `${timeResample}T`,
+      join_dataframes: true,
+      start: 1680480000000
     });
+  }, [timeResample]);
 
-  React.useEffect(() => {
-    if (isSensorDataReady && gas.data) {
-      setIsLoading(false);
+  const memoizedChart = useMemo(() => {
+    if (!dataResampleMutation.isLoading && dataResampleMutation.data) {
+      return {
+        data: dataResampleMutation.data?.results.map(item => Number(item[1])),
+        labels: dataResampleMutation.data?.results.map(item => Number(item[0]))
+      };
     }
-  }, [isSensorDataReady, setIsLoading, gas.data]);
+  }, [dataResampleMutation.data, dataResampleMutation.isLoading]);
 
   return (
     <Wrapper>
       <ScrollView style={{ flex: 1, width: "100%" }}>
         <Box gap="sm">
-          <Text variant="mediumBold" color="black">
+          <Text variant="largeMedium" color="black">
             Dashboard
           </Text>
-          <Text color="gray">Good to see you're safe, {userName}</Text>
-          <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-            <Text color="black">Overview</Text>
+          <Box>
+            <Text color="gray">Welcome back, {name ?? "User"}</Text>
+            <Text color="gray">Here's your overview for today.</Text>
           </Box>
-          {(!isSensorDataReady || !gas.data) && <Skeleton.Chart />}
-          {isSensorDataReady && gas.data && (
+          <ChartTimePills
+            defaultSelectedTime={15}
+            isDisabled={dataResampleMutation.isLoading}
+            isLoading={dataResampleMutation.isLoading}
+            onClick={setTimeResample}
+          />
+          {isConnected && !dataResampleMutation.isLoading && memoizedChart ? (
             <SensorDataChart
-              chartLabels={gas.data.chartLabels}
-              chartData={gas.data.chartData}
+              chartLabels={memoizedChart.labels}
+              chartData={memoizedChart.data}
               chartSymbolSuffix="PPM"
             />
+          ) : (
+            <Skeleton.Chart />
           )}
-          <Box gap="sm">
-            <Text color="gray">Recent readings</Text>
+          <Box borderTopColor="grayLight" borderTopWidth={StyleSheet.hairlineWidth} gap="sm">
+            <Box pt="xs">
+              <Text color="black">Recent readings</Text>
+              {isMoreThanMinuteInactive && (
+                <Text color="gray" variant="smallThin">
+                  Last updated {dayjs().to(dayjs(lastActive))}
+                </Text>
+              )}
+            </Box>
             <Box>
-              {isSensorDataReady ? (
+              {isConnected ? (
                 <>
-                  <SensorListItem title="Gas" {...getSensorNumericValue(SENSOR_TYPES.GAS, latestData.gas)} />
-                  <SensorListItem title="Fire" value={fireDescription} isHigh={Boolean(latestData.fire)} />
+                  <SensorListItem
+                    title="Gas"
+                    iconName="gas-cylinder"
+                    iconColor={theme.colors.warning}
+                    value={`${latestData.gas} ${MEASUREMENTS.GAS}`}
+                  />
+                  <SensorListItem
+                    title="Fire"
+                    iconName="fire"
+                    iconColor={theme.colors.danger}
+                    value={getFireDescriptiveValue(latestData.flame)}
+                  />
                   <SensorListItem
                     title="Temperature"
-                    {...getSensorNumericValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
+                    iconName="thermometer"
+                    iconColor={theme.colors.success}
+                    value={`${latestData.temperature} ${MEASUREMENTS.TEMPERATURE}`}
                   />
                   <SensorListItem
                     title="Humidity"
-                    {...getSensorNumericValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)}
+                    iconName="water"
+                    iconColor={theme.colors.primaryDark}
+                    value={`${latestData.humidity} ${MEASUREMENTS.HUMIDITY}`}
                   />
                 </>
               ) : (
@@ -118,31 +126,29 @@ export const Dashboard = () => {
             </Box>
           </Box>
           <Box gap="sm" paddingBottom="2xl">
-            <Text color="gray">Sensor summary</Text>
+            <Text color="black">Sensor summary</Text>
             <ScrollView horizontal>
               <Box gap="sm" flexDirection="row">
-                {isSensorDataReady ? (
+                {isConnected ? (
                   <>
-                    <SensorCardItem
-                      iconName="fire"
-                      title="Fire"
-                      value={fireDescription}
-                      isHigh={Boolean(latestData.fire)}
-                    />
+                    <SensorCardItem iconName="fire" title="Fire" value={getFireDescriptiveValue(latestData.flame)} />
                     <SensorCardItem
                       iconName="gas-cylinder"
                       title="Gas"
-                      {...getSensorDescriptiveValue(SENSOR_TYPES.GAS, latestData.gas)}
+                      idealRange="low"
+                      {...getGasDescriptiveValue(latestData.gas)}
                     />
                     <SensorCardItem
                       iconName="thermometer"
                       title="Temperature"
-                      {...getSensorDescriptiveValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
+                      idealRange="med"
+                      {...getTemperatureDescriptiveValue(latestData.temperature)}
                     />
                     <SensorCardItem
                       iconName="water"
                       title="Humidity"
-                      {...getSensorDescriptiveValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)}
+                      idealRange="med"
+                      {...getHumidityDescriptiveValue(latestData.humidity)}
                     />
                   </>
                 ) : (
@@ -159,4 +165,4 @@ export const Dashboard = () => {
       </ScrollView>
     </Wrapper>
   );
-};
+});

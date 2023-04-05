@@ -4,17 +4,20 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
 
-import { SensorData } from "../types/components";
+import { SensorData, SensorRange } from "../types/components";
 
 type Props = {
   iconName: string;
+  idealRange?: SensorRange;
+  range?: SensorRange;
 } & SensorData;
 
 export const SensorCardItem = (props: Props) => {
-  const { isHigh, title, value, iconName } = props;
+  const { range, idealRange, title, value, iconName } = props;
 
-  const indicatorIcon = isHigh ? "close-circle" : "check-circle";
-  const indicatorColor = isHigh ? theme.colors.danger : theme.colors.success;
+  const isRangeIdeal = idealRange ? range === idealRange : range !== "high";
+  const indicatorIcon = isRangeIdeal ? "check-circle" : "close-circle";
+  const indicatorColor = isRangeIdeal ? theme.colors.success : theme.colors.danger;
   return (
     <Box
       gap="2xs"
