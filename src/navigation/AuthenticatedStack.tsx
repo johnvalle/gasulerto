@@ -55,8 +55,8 @@ const HomeTabs = () => {
 export default function AuthenticatedStack() {
   return (
     <AuthStack.Navigator screenOptions={{ headerShown: false }}>
-      <AuthStack.Screen name={AppScreen.Alarm} component={Alarm} />
       <AuthStack.Screen name={AppScreen.Home} component={HomeTabs} />
+      <AuthStack.Screen name={AppScreen.Alarm} component={Alarm} options={{ presentation: "fullScreenModal" }} />
     </AuthStack.Navigator>
   );
 }
