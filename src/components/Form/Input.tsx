@@ -37,7 +37,7 @@ export const Input = (props: Props) => {
       <MagnusInput
         placeholder="Enter gas leak threshold"
         my="md"
-        h={40}
+        h={42}
         borderColor={!isValid ? theme.colors.danger : theme.colors.grayLight}
         focusBorderColor={theme.colors.primary}
         suffix={suffixIcon}
