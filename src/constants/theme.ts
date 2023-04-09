@@ -14,7 +14,7 @@ const palette = {
   black: "#000000"
 };
 
-const sizes = { "2xs": 8, xs: 12, sm: 16, md: 24, lg: 32, xl: 40, "2xl": 56 };
+const sizes = { "2xs": 8, xs: 10, sm: 14, md: 18, lg: 24, xl: 32, "2xl": 48 };
 
 export const fontStyles = {
   defaults: {
