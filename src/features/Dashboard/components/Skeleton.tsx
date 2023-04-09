@@ -25,14 +25,14 @@ export const ListItem = () => (
 
 export const CardItem = () => (
   <Box
+    flex={1}
     borderWidth={StyleSheet.hairlineWidth}
     borderColor="grayLight"
     borderRadius={theme.spacing.sm}
     p="sm"
-    flex={1}
     flexDirection="column"
-    width={150}
-    height={130}
+    width={160}
+    height={100}
     justifyContent="space-between">
     <Box flex={1} alignItems="flex-end">
       <Skeleton.Circle bg={theme.colors.grayLight} w={theme.spacing.md} h={theme.spacing.md} />

@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
-import React from "react";
+import React, { useMemo } from "react";
 import { Dimensions, ScrollView, StyleSheet } from "react-native";
 import { LineChart } from "react-native-chart-kit";
 
 import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
+import { useUserStore } from "@core/hooks/useUserStore";
 
 type Props = {
   chartData: number[];
@@ -15,15 +16,22 @@ type Props = {
 export const SensorDataChart = React.memo((props: Props) => {
   const { chartData, chartLabels, chartSymbolSuffix } = props;
 
-  const formattedChartLabels = chartLabels.length
-    ? chartLabels.map(timeStamp => dayjs(timeStamp).format("h:mm A"))
-    : [];
+  // asserting type as user wont be able to access the page without logging in.
+  const threshold = useUserStore(state => state.threshold) as number;
+
+  const formattedChartLabels = useMemo(() => {
+    return chartLabels.map(timeStamp => dayjs(timeStamp).format("h:mm A"));
+  }, [chartLabels]);
 
   const baseChartWidth = Dimensions.get("window").width - theme.spacing.md * 2;
   const columnsCount = 6;
   const widthPerColumn = baseChartWidth / columnsCount;
   const totalSize = widthPerColumn * chartData.length;
   const chartWidth = Math.max(baseChartWidth, totalSize);
+
+  const getDotColor = (data: number) => {
+    return data >= threshold ? theme.colors.danger : theme.colors.primary;
+  };
 
   return (
     <ScrollView horizontal>
@@ -49,6 +57,7 @@ export const SensorDataChart = React.memo((props: Props) => {
             </Box>
           );
         }}
+        getDotColor={getDotColor}
         width={chartWidth}
         height={240}
         withShadow={false}

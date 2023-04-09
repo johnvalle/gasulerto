@@ -20,15 +20,15 @@ export const SensorCardItem = (props: Props) => {
   const indicatorColor = isRangeIdeal ? theme.colors.success : theme.colors.danger;
   return (
     <Box
-      gap="2xs"
+      flex={1}
       position="relative"
       borderWidth={StyleSheet.hairlineWidth}
       borderColor="grayLight"
-      borderRadius={theme.spacing.sm}
+      borderRadius={theme.spacing.xs}
       padding="xs"
       justifyContent="flex-end"
-      width={150}
-      height={130}>
+      width={160}
+      height={100}>
       <Box
         width={theme.spacing.md}
         height={theme.spacing.md}
@@ -39,10 +39,14 @@ export const SensorCardItem = (props: Props) => {
         <Icon name={indicatorIcon} size={theme.spacing.md} color={indicatorColor} />
       </Box>
       <Icon name={iconName} size={theme.spacing.md} color={theme.colors.primary} />
-      <Text variant="mediumBold" color="primary">
-        {title}
-      </Text>
-      <Text color="gray">{value}</Text>
+      <Box>
+        <Text variant="smallBold" color="gray">
+          {title}
+        </Text>
+        <Text color="gray" variant="smallThin">
+          {value}
+        </Text>
+      </Box>
     </Box>
   );
 };
