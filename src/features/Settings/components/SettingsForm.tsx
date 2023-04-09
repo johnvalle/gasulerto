@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { StyleSheet } from "react-native";
-import { Button } from "react-native-magnus";
+import { StyleSheet, TouchableOpacity } from "react-native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { Box, Input, Text } from "@core/components";
+import { THRESHOLD } from "@core/constants/sensor";
 import theme from "@core/constants/theme";
 import { UserSettings, useUserStore } from "@core/hooks";
 import { Nullable } from "@core/types/generics/nullable";
@@ -12,36 +13,35 @@ import { SettingsFormInput } from "../types/SettingsFormInput";
 
 type Props = {
   userSettings: Nullable<UserSettings>;
-  onSubmit: (data: UserSettings) => void;
 };
 
 export const SettingsForm = (props: Props) => {
   const { isAnonymous } = useUserStore();
-  const { userSettings, onSubmit } = props;
+  const { userSettings } = props;
   const {
     control,
-    formState: { isDirty, errors, isSubmitting },
-    handleSubmit
+    formState: { errors },
+    setValue
   } = useFormContext<SettingsFormInput>();
 
   const renderFixedContent = ({ label, helperText, value }: Record<"label" | "helperText" | "value", string>) => {
     return (
-      <Box flex={1} gap="xs">
-        <Box>
+      <Box borderBottomWidth={StyleSheet.hairlineWidth} borderColor="grayLight" pb="xs" gap="xs">
+        <Text color="gray" variant="smallBold">
+          {value}
+        </Text>
+        <Box flex={2}>
           <Text color="black">{label}</Text>
           <Text color="gray" variant="smallThin">
             {helperText}
           </Text>
-        </Box>
-        <Box borderWidth={StyleSheet.hairlineWidth} borderColor="grayLight" borderRadius={theme.spacing["2xs"]} p="xs">
-          <Text color="gray">{value}</Text>
         </Box>
       </Box>
     );
   };
 
   return (
-    <Box gap="2xs">
+    <Box gap="xs">
       <Controller
         name="threshold"
         control={control}
@@ -49,21 +49,38 @@ export const SettingsForm = (props: Props) => {
           required: true
         }}
         defaultValue={userSettings?.threshold}
-        render={({ field: { onChange, onBlur, value } }) => {
+        render={({ field: { value } }) => {
           const label = "Gas leak threshold";
           const helperText = "Alarms when threshold is exceeded";
           return isAnonymous ? (
-            renderFixedContent({ label, helperText, value: value?.toString() })
+            renderFixedContent({ label, helperText, value: `${value} PPM` })
           ) : (
-            <Input
-              label={label}
-              helperText={helperText}
-              onBlur={onBlur}
-              value={value?.toString()}
-              isValid={!errors?.threshold?.message}
-              errorMessage={errors?.threshold?.message}
-              onChangeText={text => onChange(text ? Number(text) : "")}
-            />
+            <Box gap="xs">
+              <Box>
+                <Text color="black">{label}</Text>
+                <Text color="gray" variant="smallThin">
+                  {helperText}
+                </Text>
+              </Box>
+              <Box gap="2xs" flex={1} flexDirection="column" justifyContent="flex-start">
+                {THRESHOLD.GAS_LIST.map((gasThreshold, idx) => (
+                  <TouchableOpacity
+                    key={`${gasThreshold}-${idx}`}
+                    onPress={() => setValue("threshold", gasThreshold, { shouldDirty: true })}>
+                    <Box flex={1} flexDirection="row" alignItems="center" gap="2xs">
+                      <Icon
+                        name={gasThreshold === value ? "checkbox-marked-circle" : "radiobox-blank"}
+                        color={gasThreshold === value ? theme.colors.success : theme.colors.gray}
+                        size={theme.spacing.sm}
+                      />
+                      <Text color="black" variant={gasThreshold === value ? "smallBold" : undefined}>
+                        {gasThreshold} PPM
+                      </Text>
+                    </Box>
+                  </TouchableOpacity>
+                ))}
+              </Box>
+            </Box>
           );
         }}
       />
@@ -115,22 +132,11 @@ export const SettingsForm = (props: Props) => {
               isValid={!errors?.primaryContact?.number?.message}
               errorMessage={errors?.primaryContact?.number?.message}
               maxLength={10}
-              prefix={
-                value !== "911" && (
-                  <Text color="gray" lineHeight={18}>
-                    +63
-                  </Text>
-                )
-              }
+              prefix={value !== "911" && <Text color="gray">+63</Text>}
             />
           );
         }}
       />
-      {isDirty && (
-        <Button loading={isSubmitting} onPress={handleSubmit(onSubmit)} bg={theme.colors.primaryDark} w="100%">
-          Save
-        </Button>
-      )}
     </Box>
   );
 };
