@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { BottomTabBar, BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { ParamListBase, RouteProp } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import theme from "@core/constants/theme";
@@ -9,6 +10,7 @@ import { Alarm } from "@core/features/Alarm/";
 import { Dashboard } from "@core/features/Dashboard";
 import { Notifications } from "@core/features/Notifications";
 import { Settings } from "@core/features/Settings/";
+import { useNotifications } from "@core/hooks/useNotifications";
 import { AppScreen, RootStackParamList } from "@core/types/navigation";
 import { getTabIconOptions } from "@core/utils/getTabIconOptions";
 
@@ -28,6 +30,14 @@ const CustomTabBar = (props: BottomTabBarProps) => (
 );
 
 const HomeTabs = () => {
+  const { unreadNotificationsCount } = useNotifications();
+
+  const renderBadge = ({ route }: { route: RouteProp<ParamListBase, string>; navigation: any }) => {
+    if (route.name === AppScreen.Notifications) {
+      return unreadNotificationsCount && !!unreadNotificationsCount ? unreadNotificationsCount : undefined;
+    }
+  };
+
   return (
     <Tab.Navigator
       initialRouteName={AppScreen.Dashboard}
@@ -38,6 +48,7 @@ const HomeTabs = () => {
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.grayLight,
         tabBarShowLabel: false,
+        tabBarBadge: renderBadge(route),
         tabBarStyle: {
           borderRadius: theme.spacing.lg,
           borderTopWidth: 0,
