@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { StyleSheet } from "react-native";
 
 import { Box, Text } from "@core/components";
@@ -8,27 +9,27 @@ import { NotificationIcon, NotificationIconProps } from "./NotificationIcon";
 type Props = {
   read: boolean;
   message: string;
+  timestamp: number;
 } & NotificationIconProps;
 
 export const NotificationCard = (props: Props) => {
-  const { read, type, message } = props;
-
-  const bgColor = read ? "white" : "primaryLight";
-  const borderWidth = read ? StyleSheet.hairlineWidth : 0;
+  const { read, type, message, timestamp } = props;
 
   return (
     <Box
-      bg={bgColor}
+      bg={!read ? "grayLight" : "white"}
       flexDirection="row"
       gap="xs"
       alignItems="center"
       p="xs"
+      mb="2xs"
       borderRadius={theme.spacing.xs}
       width="100%"
+      position="relative"
       borderColor="grayLight"
-      borderWidth={borderWidth}>
+      borderWidth={StyleSheet.hairlineWidth}>
       <NotificationIcon type={props.type} />
-      <Box>
+      <Box flex={1}>
         <Text color="black">{message}</Text>
         <Box flexDirection="row" gap="2xs">
           <Text variant="extraSmallMedium" color="gray" textTransform="capitalize">
@@ -38,7 +39,7 @@ export const NotificationCard = (props: Props) => {
             ·
           </Text>
           <Text variant="extraSmallMedium" color="gray">
-            3m ago
+            {dayjs().to(dayjs(timestamp))}
           </Text>
         </Box>
       </Box>

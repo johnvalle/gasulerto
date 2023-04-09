@@ -1,29 +1,83 @@
 import React from "react";
-import { Image, ScrollView, StyleSheet } from "react-native";
+import { Image, RefreshControl, StyleSheet, VirtualizedList } from "react-native";
 import { Dimensions } from "react-native";
+import { Button } from "react-native-magnus";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { Box, Text, Wrapper } from "@core/components";
 import theme from "@core/constants/theme";
+import { useNotifications } from "@core/hooks/useNotifications";
 
 import NotificationPageBanner from "@assets/images/notification-page.png";
 
 import { NotificationCard } from "./NotificationCard";
 
 export const Notifications = React.memo(() => {
+  const {
+    markAllAsRead,
+    initializeNotifications,
+    hasNotifications,
+    notificationsOrderByTime,
+    unreadNotificationsCount,
+    isLoading: isLoadingNotifications
+  } = useNotifications();
+
+  const hasUnreadNotifications = !!unreadNotificationsCount;
+  const onRefresh = () => initializeNotifications();
+
   return (
     <Wrapper>
       <Image source={NotificationPageBanner} style={styles.bannerImage} resizeMode="contain" />
-      <Text variant="largeMedium" color="black" marginVertical="md">
-        Notifications
-      </Text>
-      <Box maxHeight={styles.scrollViewContainer.height} width="100%">
-        <ScrollView>
-          <Box flexDirection="column" gap="2xs">
-            <NotificationCard read={false} type="info" message="Your system is now updated." />
-            <NotificationCard read={true} type="warning" message="Temperature threshold is almost exceeded." />
-            <NotificationCard read={true} type="danger" message="Gas leak detected." />
-          </Box>
-        </ScrollView>
+      <Box
+        width="100%"
+        alignItems="center"
+        flexDirection="row"
+        justifyContent={hasNotifications ? "space-between" : "center"}
+        my="sm">
+        <Box>
+          <Text variant="largeMedium" color="black" textAlign={hasNotifications ? "left" : "center"}>
+            Notifications
+          </Text>
+          <Text color="gray" textAlign={hasNotifications ? "left" : "center"}>
+            {hasUnreadNotifications ? unreadNotificationsCount : "No"} new notifications
+          </Text>
+        </Box>
+        {hasNotifications && (
+          <Button
+            bg={hasUnreadNotifications ? theme.colors.success : theme.colors.grayLight}
+            onPress={markAllAsRead}
+            disabled={!hasUnreadNotifications}
+            rounded="circle">
+            <Icon
+              name="check-all"
+              color={hasUnreadNotifications ? theme.colors.white : theme.colors.gray}
+              size={theme.spacing.sm}
+            />
+          </Button>
+        )}
+      </Box>
+      <Box maxHeight={styles.scrollViewContainer.height} width="100%" my="md">
+        {hasNotifications && (
+          <VirtualizedList
+            refreshControl={<RefreshControl refreshing={isLoadingNotifications} onRefresh={onRefresh} />}
+            data={notificationsOrderByTime}
+            initialNumToRender={10}
+            keyExtractor={(item: any) => item.timestamp}
+            getItem={(item, idx) => item[idx]}
+            getItemCount={() => notificationsOrderByTime.length}
+            renderItem={({ item: notification }) => {
+              return (
+                <NotificationCard
+                  key={notification.timestamp}
+                  read={notification.read}
+                  type={notification.type}
+                  message={notification.description}
+                  timestamp={notification.timestamp}
+                />
+              );
+            }}
+          />
+        )}
       </Box>
     </Wrapper>
   );
