@@ -71,7 +71,7 @@ export const SettingsForm = (props: Props) => {
                       <Icon
                         name={gasThreshold === value ? "checkbox-marked-circle" : "radiobox-blank"}
                         color={gasThreshold === value ? theme.colors.success : theme.colors.gray}
-                        size={theme.spacing.sm}
+                        size={theme.spacing.md}
                       />
                       <Text color="black" variant={gasThreshold === value ? "smallBold" : undefined}>
                         {gasThreshold} PPM

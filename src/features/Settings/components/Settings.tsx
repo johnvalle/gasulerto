@@ -38,7 +38,7 @@ export const Settings = React.memo(() => {
         <KeyboardAvoidingView>
           <Box gap="sm" flex={1} width="100%">
             <Image source={SettingsPageBanner} style={styles.imageBanner} resizeMode="contain" />
-            <Box flex={1} flexDirection="row" justifyContent="space-between" my="sm">
+            <Box flex={1} flexDirection="row" justifyContent="space-between">
               <Box>
                 <Text variant="largeMedium" color="black">
                   Settings
@@ -47,13 +47,13 @@ export const Settings = React.memo(() => {
                 {methods.formState.isDirty && <Text color="gray">You have unsaved changes.</Text>}
               </Box>
               {methods.formState.isDirty && (
-                <Box flex={1} flexDirection="row" gap="xs" alignSelf="center" justifyContent="flex-end">
+                <Box flex={1} flexDirection="row" gap="xs" alignItems="center" justifyContent="flex-end">
                   <Button
                     loading={methods.formState.isSubmitting}
-                    rounded="md"
+                    rounded="circle"
                     onPress={methods.handleSubmit(updateUserSettings)}
                     bg={theme.colors.success}>
-                    Save
+                    <Icon name="content-save-check" color={theme.colors.white} size={theme.spacing.sm} />
                   </Button>
                   <Button
                     onPress={() => methods.reset()}

@@ -32,8 +32,7 @@ export const Notifications = React.memo(() => {
         width="100%"
         alignItems="center"
         flexDirection="row"
-        justifyContent={hasNotifications ? "space-between" : "center"}
-        my="sm">
+        justifyContent={hasNotifications ? "space-between" : "center"}>
         <Box>
           <Text variant="largeMedium" color="black" textAlign={hasNotifications ? "left" : "center"}>
             Notifications
@@ -88,7 +87,7 @@ const bannerText = theme.spacing.lg + theme.spacing.md; // space occupied by ban
 const bottomTab = theme.spacing.xl + theme.spacing.md; // space occupied by bottom tab
 const imageHeight = 200;
 const contentHeight = imageHeight + bannerText + bottomTab + theme.spacing.sm; //adding padding;
-const remainingSpace = paddedDeviceHeight - contentHeight;
+const remainingSpace = paddedDeviceHeight - contentHeight - theme.spacing.xl;
 const scrollViewHeight = (remainingSpace / paddedDeviceHeight) * 100;
 const scrollHeight = `${scrollViewHeight}%`;
 

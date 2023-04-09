@@ -26,7 +26,6 @@ export const useNotifications = () => {
     try {
       setIsLoading(true);
       const snapshot = await userNotifications.doc(userId).get();
-      console.log({ newData: snapshot.data() });
       return snapshot.data() as FirebaseNotificationHistoryItem;
     } catch (error) {
       console.error("Failed to retrieve notifications", error);
