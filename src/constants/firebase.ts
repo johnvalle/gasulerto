@@ -1,5 +1,6 @@
 export const FIREBASE = {
   FIRESTORE: {
-    SETTINGS: "settings"
+    SETTINGS: "settings",
+    NOTIFICATIONS: "notifications"
   }
 };
