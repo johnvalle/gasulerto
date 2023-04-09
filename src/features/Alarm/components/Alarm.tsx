@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { Image, Linking, StyleSheet, TouchableOpacity } from "react-native";
+import { Image, Linking, StyleSheet, TouchableOpacity, Vibration } from "react-native";
 import { Button } from "react-native-magnus";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -20,6 +20,7 @@ export const Alarm = ({ navigation }: ScreenProps<AppScreen.Alarm>) => {
   };
 
   const cancelAlarm = () => {
+    Vibration.cancel();
     return navigation.navigate(AppScreen.Home);
   };
 

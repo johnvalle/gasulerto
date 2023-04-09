@@ -6,7 +6,7 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import { Loader } from "@core/components";
 import { LoadingContext } from "@core/contexts/LoadingContext";
-import { useAuth, useUserStore } from "@core/hooks";
+import { useAuth, useUserSettings, useUserStore } from "@core/hooks";
 import { usePushy } from "@core/hooks/usePushy";
 import { useUbidotsMqtt } from "@core/hooks/useUbidotsMqtt";
 import { UserStore } from "@core/hooks/useUserStore";
@@ -39,6 +39,8 @@ export const AppNavigation = () => {
     return unsubcribe();
   });
 
+  useUserSettings();
+
   // listen to state changes everytime logging in or signing out
   useUserStore.subscribe(watchTokenExpiration);
 
@@ -57,7 +59,7 @@ export const AppNavigation = () => {
     if (isNotReachable && isDisconnected) {
       Alert.alert("Connection lost", "Please connect to an stable internet connection to continue using the app.");
     }
-  }, [isConnected]);
+  }, [isConnected, isInternetReachable]);
 
   return (
     <>

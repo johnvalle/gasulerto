@@ -1,4 +1,5 @@
 import { SensorRange } from "@core/features/Dashboard/types/components";
+import { useUserStore } from "@core/hooks";
 
 type SensorValuesMap = Record<
   SensorRange,
@@ -41,17 +42,21 @@ export const getSensorDescriptiveValue = (
 };
 
 export const getGasDescriptiveValue = (value: number) => {
+  const minThreshold = Number(useUserStore.getState().threshold);
+  const thresholdMediumMaxRange = minThreshold - 250;
+  const thresholdMediumMinRange = thresholdMediumMaxRange - 250;
+
   const config = {
     low: {
-      range: [0, 300],
+      range: [0, thresholdMediumMinRange - 1],
       description: "Low concentration"
     },
     med: {
-      range: [301, 500],
+      range: [thresholdMediumMaxRange, minThreshold - 1],
       description: "Medium concentration "
     },
     high: {
-      range: [501, 1000],
+      range: [minThreshold, 10000],
       description: "High concentration"
     }
   };
