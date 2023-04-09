@@ -9,3 +9,8 @@ export enum SENSOR_TYPES {
   HUMIDITY = "HUMIDITY",
   TEMPERATURE = "TEMPERATURE"
 }
+
+export const THRESHOLD = {
+  GAS: 1000,
+  GAS_LIST: [500, 1000, 1500, 2000]
+};
