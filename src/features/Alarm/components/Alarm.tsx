@@ -16,7 +16,8 @@ export const Alarm = ({ navigation }: ScreenProps<AppScreen.Alarm>) => {
   const { setIsLoading } = useContext(LoadingContext);
 
   const callPrimaryContact = () => {
-    Linking.openURL(`tel:${userSettings?.primaryContact.number}`);
+    Vibration.cancel();
+    return Linking.openURL(`tel:${userSettings?.primaryContact.number}`);
   };
 
   const cancelAlarm = () => {
