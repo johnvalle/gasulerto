@@ -1,5 +1,5 @@
 import Pushy from "pushy-react-native";
-import { AppRegistry, LogBox, Text, TextInput } from "react-native";
+import { AppRegistry, LogBox, Text, TextInput, Vibration } from "react-native";
 
 import App from "./App";
 import { name as appName } from "./app.json";
@@ -25,9 +25,17 @@ Pushy.setNotificationListener(async data => {
 
   const notificationTitle = data.title;
   const notificationText = data.message;
+  const notificationType = data.type;
 
   // Android: Displays a system notification
   // iOS: Displays an alert dialog
-  RootNavigation.navigate("Alarm");
-  Pushy.notify(notificationTitle, notificationText, data);
+
+  if (!!useUserStore.getState().token) {
+    Pushy.notify(notificationTitle, notificationText, data);
+
+    if (notificationType === "alert") {
+      RootNavigation.navigate("Alarm");
+      Vibration.vibrate([200, 200, 200], true);
+    }
+  }
 });
