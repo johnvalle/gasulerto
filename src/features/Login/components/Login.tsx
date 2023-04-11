@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { ImageBackground, StyleSheet, TouchableOpacity } from "react-native";
+import { ImageBackground, StyleSheet, ToastAndroid, TouchableOpacity } from "react-native";
 
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
@@ -25,7 +25,7 @@ export const Login = () => {
       await signInUsingGoogle();
     } catch (error) {
       console.error(error);
-      throw new Error("Failed to login using Google");
+      ToastAndroid.show("Failed to login using Google", 3000);
     } finally {
       setIsLoading(false);
     }
@@ -37,7 +37,7 @@ export const Login = () => {
       await signInAnonymously();
     } catch (error) {
       console.error(error);
-      throw Error("Failed to signin anonymously");
+      ToastAndroid.show("Failed to login anonymously", 3000);
     } finally {
       setIsLoading(false);
     }

@@ -1,17 +1,6 @@
-import { ParamListBase, RouteProp } from "@react-navigation/native";
+import { AppScreen, RouteParam } from "@core/types/navigation";
 
-import { AppScreen } from "@core/types/navigation";
-
-export const getTabIconOptions = ({
-  route,
-  color
-}: {
-  route: {
-    route: RouteProp<ParamListBase, string>;
-    navigation: any;
-  };
-  color: string;
-}) => {
+export const getTabIconOptions = ({ route, color }: { route: RouteParam; color: string }) => {
   const routeName = route.route.name;
   let name = "";
 

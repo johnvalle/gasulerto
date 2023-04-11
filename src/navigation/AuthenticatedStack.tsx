@@ -2,7 +2,6 @@ import React from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { BottomTabBar, BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { ParamListBase, RouteProp } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import theme from "@core/constants/theme";
@@ -11,7 +10,7 @@ import { Dashboard } from "@core/features/Dashboard";
 import { Notifications } from "@core/features/Notifications";
 import { Settings } from "@core/features/Settings/";
 import { useNotifications } from "@core/hooks/useNotifications";
-import { AppScreen, RootStackParamList } from "@core/types/navigation";
+import { AppScreen, RootStackParamList, RouteParam } from "@core/types/navigation";
 import { getTabIconOptions } from "@core/utils/getTabIconOptions";
 
 import { Box } from "@components";
@@ -32,7 +31,7 @@ const CustomTabBar = (props: BottomTabBarProps) => (
 const HomeTabs = () => {
   const { unreadNotificationsCount } = useNotifications();
 
-  const renderBadge = ({ route }: { route: RouteProp<ParamListBase, string>; navigation: any }) => {
+  const renderBadge = ({ route }: RouteParam) => {
     if (route.name === AppScreen.Notifications) {
       return unreadNotificationsCount && !!unreadNotificationsCount ? unreadNotificationsCount : undefined;
     }
