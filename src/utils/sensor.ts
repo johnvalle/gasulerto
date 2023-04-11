@@ -44,11 +44,10 @@ export const getSensorDescriptiveValue = (
 export const getGasDescriptiveValue = (value: number) => {
   const minThreshold = Number(useUserStore.getState().threshold);
   const thresholdMediumMaxRange = minThreshold - 250;
-  const thresholdMediumMinRange = thresholdMediumMaxRange - 250;
 
   const config = {
     low: {
-      range: [0, thresholdMediumMinRange - 1],
+      range: [0, thresholdMediumMaxRange - 1],
       description: "Low concentration"
     },
     med: {
@@ -65,9 +64,15 @@ export const getGasDescriptiveValue = (value: number) => {
 
 export const getFireDescriptiveValue = (value: number) => {
   if (value === 0) {
-    return "Fire detected";
+    return {
+      value: "Fire detected",
+      range: "high" as SensorRange
+    };
   } else {
-    return "None";
+    return {
+      value: "None",
+      range: "low" as SensorRange
+    };
   }
 };
 

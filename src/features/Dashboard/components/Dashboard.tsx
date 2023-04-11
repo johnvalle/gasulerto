@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 import { Box, Text, Wrapper } from "@core/components";
 import { VARIABLE_ID } from "@core/constants/api";
@@ -21,6 +21,8 @@ import {
 } from "@core/utils/sensor";
 
 import { getUbidotsDataResample } from "../api/getUbidotsDataResample";
+import { getLastHumidityData } from "../api/getUbidotsHumidity";
+import { getLastTemperatureData } from "../api/getUbidotsTemperature";
 import { ChartTimePills } from "./ChartTimePills";
 import { SensorCardItem } from "./SensorCardItem";
 import { SensorDataChart } from "./SensorDataChart";
@@ -30,7 +32,7 @@ import * as Skeleton from "./Skeleton";
 dayjs.extend(relativeTime);
 
 export const Dashboard = React.memo(() => {
-  const { name } = useUserStore();
+  const { name, threshold } = useUserStore();
   const { setIsLoading } = useContext(LoadingContext);
   const { signOut } = useAuth();
   const [latestData, isConnected, lastActive] = useUbidotsStore(state => [
@@ -38,6 +40,11 @@ export const Dashboard = React.memo(() => {
     state.isConnected,
     state.lastActive
   ]);
+
+  const humidityQuery = useQuery(["humidity"], getLastHumidityData, { refetchInterval: 1000 * 30 });
+  const temperatureQuery = useQuery(["temperature"], getLastTemperatureData, { refetchInterval: 1000 * 30 });
+
+  const isPageReady = isConnected && !humidityQuery.isLoading && !temperatureQuery.isLoading && !!threshold;
 
   const isMoreThanMinuteInactive = Boolean(dayjs().diff(dayjs(lastActive), "m"));
   const dataResampleMutation = useMutation(getUbidotsDataResample);
@@ -106,7 +113,7 @@ export const Dashboard = React.memo(() => {
             isLoading={dataResampleMutation.isLoading}
             onClick={setTimeResample}
           />
-          {isConnected && !dataResampleMutation.isLoading && memoizedChart ? (
+          {isPageReady && !dataResampleMutation.isLoading && memoizedChart ? (
             <>
               <Box>
                 <Text color="black">Gas PPM </Text>
@@ -131,7 +138,7 @@ export const Dashboard = React.memo(() => {
               )}
             </Box>
             <Box>
-              {isConnected ? (
+              {isPageReady ? (
                 <>
                   <SensorListItem
                     title="Gas"
@@ -143,19 +150,19 @@ export const Dashboard = React.memo(() => {
                     title="Fire"
                     iconName="fire"
                     iconColor={theme.colors.danger}
-                    value={getFireDescriptiveValue(latestData.flame)}
+                    value={getFireDescriptiveValue(latestData.flame).value}
                   />
                   <SensorListItem
                     title="Temperature"
                     iconName="thermometer"
                     iconColor={theme.colors.success}
-                    value={`${latestData.temperature} ${MEASUREMENTS.TEMPERATURE}`}
+                    value={`${temperatureQuery.data?.results[0].value} ${MEASUREMENTS.TEMPERATURE}`}
                   />
                   <SensorListItem
                     title="Humidity"
                     iconName="water"
                     iconColor={theme.colors.primaryDark}
-                    value={`${latestData.humidity} ${MEASUREMENTS.HUMIDITY}`}
+                    value={`${humidityQuery.data?.results[0].value} ${MEASUREMENTS.HUMIDITY}`}
                   />
                 </>
               ) : (
@@ -166,10 +173,15 @@ export const Dashboard = React.memo(() => {
           <Box gap="sm" paddingBottom="2xl">
             <Text color="black">Sensor summary</Text>
             <Box flex={1} flexDirection="column" gap="xs" mb="md">
-              {isConnected ? (
+              {isPageReady ? (
                 <>
                   <Box flex={1} flexDirection="row" gap="xs">
-                    <SensorCardItem iconName="fire" title="Fire" value={getFireDescriptiveValue(latestData.flame)} />
+                    <SensorCardItem
+                      iconName="fire"
+                      title="Fire"
+                      idealRange="low"
+                      {...getFireDescriptiveValue(latestData.flame)}
+                    />
                     <SensorCardItem
                       iconName="gas-cylinder"
                       title="Gas"
@@ -182,13 +194,13 @@ export const Dashboard = React.memo(() => {
                       iconName="thermometer"
                       title="Temperature"
                       idealRange="med"
-                      {...getTemperatureDescriptiveValue(latestData.temperature)}
+                      {...getTemperatureDescriptiveValue(temperatureQuery.data?.results[0].value ?? 0)}
                     />
                     <SensorCardItem
                       iconName="water"
                       title="Humidity"
                       idealRange="med"
-                      {...getHumidityDescriptiveValue(latestData.humidity)}
+                      {...getHumidityDescriptiveValue(humidityQuery.data?.results[0].value ?? 0)}
                     />
                   </Box>
                 </>
