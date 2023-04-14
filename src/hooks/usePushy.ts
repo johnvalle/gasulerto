@@ -2,35 +2,46 @@ import Pushy from "pushy-react-native";
 import { useCallback, useEffect } from "react";
 import { Platform } from "react-native";
 
+import { THRESHOLD } from "@core/constants/sensor";
+
 import { useUserStore } from "./useUserStore";
 
 export const usePushy = () => {
   const threshold = useUserStore(state => state.threshold);
 
-  const listenNotifications = useCallback(async () => {
-    if (!threshold) return;
-    Pushy.listen();
-    Pushy.setNotificationIcon("ic_notification");
-    if (Platform.OS === "android") {
-      Pushy.toggleFCM(true);
+  const removePreviousSubscriptions = async () => {
+    const isRegistered = await Pushy.isRegistered();
+    if (!isRegistered) {
+      return;
     }
 
-    const deviceToken = await Pushy.register();
-    if (!!deviceToken) {
-      const isRegistered = await Pushy.isRegistered();
-      if (isRegistered) {
-        Pushy.subscribe(threshold.toString())
-          .then(() => {
-            console.log(`Pushy subsribed to ${threshold}`);
-          })
-          .catch(err => {
-            throw Error(err);
-          });
-      }
-    }
-  }, [threshold]);
+    THRESHOLD.GAS_LIST.forEach(value => Pushy.unsubscribe(value.toString()));
+  };
 
   useEffect(() => {
-    listenNotifications();
-  }, [threshold, listenNotifications]);
+    (async () => {
+      if (!threshold) return;
+      Pushy.listen();
+      Pushy.setNotificationIcon("ic_notification");
+      if (Platform.OS === "android") {
+        Pushy.toggleFCM(true);
+      }
+
+      const deviceToken = await Pushy.register();
+      if (!!deviceToken) {
+        const isRegistered = await Pushy.isRegistered();
+        if (isRegistered) {
+          removePreviousSubscriptions()
+            .then(() => {
+              Pushy.subscribe(threshold.toString())
+                .then(() => {
+                  console.log(`Pushy subscribed to ${threshold}`);
+                })
+                .catch(err => console.log("Failed to subscribe", err));
+            })
+            .catch(err => console.log("Failed to unsubscribe", err));
+        }
+      }
+    })();
+  }, [threshold]);
 };

@@ -1,4 +1,8 @@
-export type NotificationType = "danger" | "warning" | "info";
+export enum NotificationType {
+  INFO = "info",
+  DANGER = "danger",
+  WARNING = "warning"
+}
 
 export type Notification = {
   title: string;

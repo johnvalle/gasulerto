@@ -6,6 +6,7 @@ import { LineChart } from "react-native-chart-kit";
 import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
 import { useUserStore } from "@core/hooks/useUserStore";
+import { getGasDescriptiveValue } from "@core/utils/sensor";
 
 type Props = {
   chartData: number[];
@@ -30,7 +31,17 @@ export const SensorDataChart = React.memo((props: Props) => {
   const chartWidth = Math.max(baseChartWidth, totalSize);
 
   const getDotColor = (data: number) => {
-    return data >= threshold ? theme.colors.danger : theme.colors.primary;
+    const { range } = getGasDescriptiveValue(data);
+
+    if (range === "med") {
+      return theme.colors.warning;
+    }
+
+    if (range === "high") {
+      return theme.colors.danger;
+    }
+
+    return theme.colors.primary;
   };
 
   return (
@@ -38,10 +49,10 @@ export const SensorDataChart = React.memo((props: Props) => {
       <LineChart
         fromZero
         data={{
-          labels: formattedChartLabels,
+          labels: formattedChartLabels.reverse(),
           datasets: [
             {
-              data: chartData,
+              data: chartData.reverse(),
               color: () => theme.colors.primaryDark,
               strokeDashArray: [4],
               strokeWidth: 1

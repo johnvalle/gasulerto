@@ -12,5 +12,5 @@ export enum SENSOR_TYPES {
 
 export const THRESHOLD = {
   GAS: 1000,
-  GAS_LIST: [500, 1000, 1500, 2000]
+  GAS_LIST: [1000, 2000]
 };

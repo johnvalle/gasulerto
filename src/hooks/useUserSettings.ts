@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import firestore from "@react-native-firebase/firestore";
 
@@ -18,18 +18,21 @@ export type UserSettings = {
 };
 
 export const useUserSettings = () => {
+  const [isRetrieved, setIsRetrieved] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [userSettings, setUserSettings] = useState<Nullable<UserSettings>>(null);
   const { userId, threshold, setUser } = useUserStore();
   const { sendInfoNotifications } = useNotifications();
 
   const settings = firestore().collection(FIREBASE.FIRESTORE.SETTINGS);
-  const id = userId as string;
 
   const getSettings = useCallback(async () => {
     try {
+      if (!userId) {
+        return;
+      }
       setIsLoading(true);
-      const user = await settings.doc(id).get();
+      const user = await settings.doc(userId).get();
       const data = user.data() as Nullable<UserSettings>;
 
       setUserSettings(data);
@@ -38,32 +41,35 @@ export const useUserSettings = () => {
       console.error("Failed to retrieve user settings", error);
     } finally {
       setIsLoading(false);
+      setIsRetrieved(true);
     }
-  }, [id, settings]);
+  }, [userId, settings]);
 
   const initializeUserSettings = useCallback(async () => {
     try {
       setIsLoading(true);
-      if (!id) {
+      if (!userId) {
         return;
       }
-      await settings.doc(id).set({ threshold: THRESHOLD.GAS, primaryContact: { name: "911 Services", number: "911" } });
+      await settings
+        .doc(userId)
+        .set({ threshold: THRESHOLD.GAS, primaryContact: { name: "911 Services", number: "911" } });
       setUser({ threshold: THRESHOLD.GAS });
     } catch (error) {
       console.error("Failed to initialize user settings", error);
     } finally {
       setIsLoading(false);
     }
-  }, [id, settings]);
+  }, [userId, settings, isRetrieved]);
 
   const updateUserSettings = async (data: UserSettings) => {
     try {
       setIsLoading(true);
-      if (!id) {
+      if (!userId) {
         return;
       }
       sendInfoNotifications();
-      settings.doc(id).set({ threshold: data.threshold, primaryContact: data.primaryContact });
+      settings.doc(userId).set({ threshold: data.threshold, primaryContact: data.primaryContact });
     } catch (error) {
       console.error("Failed to update threshold", error);
     } finally {
@@ -72,17 +78,17 @@ export const useUserSettings = () => {
   };
 
   useEffect(() => {
-    const unsubscribe = settings.doc(id).onSnapshot(getSettings);
-    return () => unsubscribe();
-  }, []);
+    if (userId) {
+      const unsubscribe = settings.doc(userId).onSnapshot(getSettings);
+      return () => unsubscribe();
+    }
+  }, [userId]);
 
   useEffect(() => {
-    if (!userSettings && !threshold) {
+    if (isRetrieved && !threshold) {
       initializeUserSettings();
-    } else {
-      getSettings();
     }
-  }, [threshold]);
+  }, [isRetrieved, threshold]);
 
   return {
     getSettings,

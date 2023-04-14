@@ -65,7 +65,7 @@ export const Settings = React.memo(() => {
                 </Box>
               )}
             </Box>
-            {!userSettings && isSettingsLoading ? (
+            {userSettings === null && isSettingsLoading ? (
               <SettingsFormLoader />
             ) : (
               <FormProvider {...methods}>
