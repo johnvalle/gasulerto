@@ -11,6 +11,8 @@ const axios = require("axios").default;
 admin.initializeApp();
 
 const db = admin.firestore();
+const THRESHOLD_LIST = [1000, 2000];
+const WARNING_LEVEL = 250;
 
 const createFirestoreNotification = (recipients, notification, notificationType) => {
   return new Promise((resolve, reject) => {
@@ -51,13 +53,10 @@ const publishToPushy = (topics, message, notificationType) => {
   return axios.post("https://api.pushy.me/push", payload, { params: { api_key: functions.config().pushy.apikey } });
 };
 
-const thresholdList = [1000, 2000];
-const warningLevel = 250;
-
 const getNotificationRecipients = value => {
-  const alertListeners = thresholdList.filter(lvl => value >= lvl);
-  const warningListeners = thresholdList.filter(
-    (lvl, idx) => value >= lvl - warningLevel && value < thresholdList[idx]
+  const alertListeners = THRESHOLD_LIST.filter(lvl => value >= lvl);
+  const warningListeners = THRESHOLD_LIST.filter(
+    (lvl, idx) => value >= lvl - WARNING_LEVEL && value < THRESHOLD_LIST[idx]
   );
   return { alertListeners, warningListeners };
 };
@@ -97,7 +96,7 @@ const sendNotification = (thresholdLevels, notification, notificationType) => {
 
 exports.sendFireNotifications = functions.https.onRequest((req, res) => {
   const sendAlertNotification = sendNotification(
-    thresholdList,
+    THRESHOLD_LIST,
     {
       title: "Alert",
       message: "Fire was detected."
@@ -118,10 +117,19 @@ exports.sendFireNotifications = functions.https.onRequest((req, res) => {
 
 exports.sendGasNotifications = functions.https.onRequest((req, res) => {
   const triggerValue = req.body.triggerValue;
-
-  console.log(JSON.stringify(req.body));
+  const expectedNotificationType = req.body.type;
 
   const { alertListeners, warningListeners } = getNotificationRecipients(triggerValue);
+
+  const expectsWarningNoListeners = expectedNotificationType === "warning" && warningListeners.length === 0;
+  const expectsAlertNoListeners = expectedNotificationType === "danger" && alertListeners.length === 0;
+  if (expectsAlertNoListeners || expectsWarningNoListeners) {
+    return res.send(200);
+  }
+
+  console.log(
+    JSON.stringify({ recipients: { alertListeners, warningListeners }, triggerValue: req.body.triggerValue })
+  );
 
   const sendWarningNotification = sendNotification(
     warningListeners,
