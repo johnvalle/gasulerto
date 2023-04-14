@@ -51,7 +51,7 @@ const publishToPushy = (topics, message, notificationType) => {
   return axios.post("https://api.pushy.me/push", payload, { params: { api_key: functions.config().pushy.apikey } });
 };
 
-const thresholdList = [500, 1000, 1500, 2000];
+const thresholdList = [1000, 2000];
 const warningLevel = 250;
 
 const getNotificationRecipients = value => {
@@ -118,6 +118,9 @@ exports.sendFireNotifications = functions.https.onRequest((req, res) => {
 
 exports.sendGasNotifications = functions.https.onRequest((req, res) => {
   const triggerValue = req.body.triggerValue;
+
+  console.log(JSON.stringify(req.body));
+
   const { alertListeners, warningListeners } = getNotificationRecipients(triggerValue);
 
   const sendWarningNotification = sendNotification(
