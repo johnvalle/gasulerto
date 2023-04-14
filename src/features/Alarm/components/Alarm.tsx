@@ -7,6 +7,7 @@ import { Box, Text, Wrapper } from "@core/components";
 import theme from "@core/constants/theme";
 import { LoadingContext } from "@core/contexts/LoadingContext";
 import { useUserSettings } from "@core/hooks";
+import { useBuzzerSoundStore } from "@core/hooks/useBuzzerSoundStore";
 import { AppScreen, ScreenProps } from "@core/types/navigation";
 
 import GasDetected from "@assets/images/gas-detected.png";
@@ -14,16 +15,26 @@ import GasDetected from "@assets/images/gas-detected.png";
 export const Alarm = ({ navigation }: ScreenProps<AppScreen.Alarm>) => {
   const { userSettings, isLoading: isSettingsLoading } = useUserSettings();
   const { setIsLoading } = useContext(LoadingContext);
+  const { sound } = useBuzzerSoundStore();
 
   const callPrimaryContact = () => {
     Vibration.cancel();
+    sound?.stop();
     return Linking.openURL(`tel:${userSettings?.primaryContact.number}`);
   };
 
   const cancelAlarm = () => {
     Vibration.cancel();
+    sound?.stop();
     return navigation.navigate(AppScreen.Home);
   };
+
+  useEffect(() => {
+    if (sound !== null) {
+      sound.play();
+      Vibration.vibrate([200, 200, 200], true);
+    }
+  }, [sound]);
 
   useEffect(() => {
     setIsLoading(isSettingsLoading);
