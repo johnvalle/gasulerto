@@ -3,6 +3,7 @@ const functions = require("firebase-functions");
 
 // The Firebase Admin SDK to access Firestore.
 const admin = require("firebase-admin");
+const dayjs = require("dayjs");
 const axios = require("axios").default;
 
 // Make sure to get local config `firebase functions:config:get > .runtimeconfig.json`
@@ -147,3 +148,33 @@ exports.sendGasNotifications = functions.https.onRequest((req, res) => {
     })
     .catch(err => res.status(400).send({ err }));
 });
+
+exports.scheduledUbidotsCleanup = functions.pubsub
+  .schedule("59 23 * * *")
+  .timeZone("Asia/Manila")
+  .onRun(context => {
+    cleanupUbidots();
+    return null;
+  });
+
+const cleanupUbidots = () => {
+  const variableKeys = {
+    flame: "6406d96def55b0000e184ac3",
+    gas: "642920a0e7464d000d979660",
+    humidity: "63f88ecae18295000eccc7fd",
+    temperature: "63f88ecb7fea6c000cd8f059"
+  };
+  return Object.values(variableKeys).forEach(value => {
+    return axios.post(
+      `https://industrial.api.ubidots.com/api/v2.0/variables/${value}/_/values/delete/`,
+      {},
+      {
+        params: {
+          token: functions.config().ubidots.token,
+          startDate: dayjs().startOf("day").valueOf(),
+          endDate: dayjs().endOf("day").valueOf()
+        }
+      }
+    );
+  });
+};
