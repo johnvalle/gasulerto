@@ -4,28 +4,31 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
 
-import { SensorData } from "../types/components";
+import { SensorData, SensorRange } from "../types/components";
 
 type Props = {
   iconName: string;
+  idealRange?: SensorRange;
+  range?: SensorRange;
 } & SensorData;
 
 export const SensorCardItem = (props: Props) => {
-  const { isHigh, title, value, iconName } = props;
+  const { range, idealRange, title, value, iconName } = props;
 
-  const indicatorIcon = isHigh ? "close-circle" : "check-circle";
-  const indicatorColor = isHigh ? theme.colors.danger : theme.colors.success;
+  const isRangeIdeal = idealRange ? range === idealRange : range !== "high";
+  const indicatorIcon = isRangeIdeal ? "check-circle" : "close-circle";
+  const indicatorColor = isRangeIdeal ? theme.colors.success : theme.colors.danger;
   return (
     <Box
-      gap="2xs"
+      flex={1}
       position="relative"
       borderWidth={StyleSheet.hairlineWidth}
       borderColor="grayLight"
-      borderRadius={theme.spacing.sm}
+      borderRadius={theme.spacing.xs}
       padding="xs"
       justifyContent="flex-end"
-      width={150}
-      height={130}>
+      width={160}
+      height={100}>
       <Box
         width={theme.spacing.md}
         height={theme.spacing.md}
@@ -36,10 +39,14 @@ export const SensorCardItem = (props: Props) => {
         <Icon name={indicatorIcon} size={theme.spacing.md} color={indicatorColor} />
       </Box>
       <Icon name={iconName} size={theme.spacing.md} color={theme.colors.primary} />
-      <Text variant="mediumBold" color="primary">
-        {title}
-      </Text>
-      <Text color="gray">{value}</Text>
+      <Box>
+        <Text variant="smallBold" color="gray">
+          {title}
+        </Text>
+        <Text color="gray" variant="smallThin">
+          {value}
+        </Text>
+      </Box>
     </Box>
   );
 };

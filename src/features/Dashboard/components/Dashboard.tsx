@@ -1,143 +1,220 @@
-import React from "react";
-import { ScrollView } from "react-native";
-import { Skeleton } from "react-native-magnus";
-import { useQueryClient } from "react-query";
-import MQTT from "sp-react-native-mqtt";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { Alert, ScrollView, StyleSheet } from "react-native";
+import { Button } from "react-native-magnus";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useMutation, useQuery } from "react-query";
 
 import { Box, Text, Wrapper } from "@core/components";
-import { SENSOR_TYPES } from "@core/constants/sensor";
+import { VARIABLE_ID } from "@core/constants/api";
+import { MEASUREMENTS } from "@core/constants/sensor";
 import theme from "@core/constants/theme";
 import { LoadingContext } from "@core/contexts/LoadingContext";
-import { useUserStore } from "@core/hooks";
+import { useAuth, useUserStore } from "@core/hooks";
+import { useUbidotsStore } from "@core/hooks/useUbidotsStore";
+import {
+  getFireDescriptiveValue,
+  getGasDescriptiveValue,
+  getHumidityDescriptiveValue,
+  getTemperatureDescriptiveValue
+} from "@core/utils/sensor";
 
-import { UBIDOTS_API_KEY } from "@env";
-
-import { useSensorData } from "../hooks/useSensorData";
+import { getUbidotsDataResample } from "../api/getUbidotsDataResample";
+import { getLastHumidityData } from "../api/getUbidotsHumidity";
+import { getLastTemperatureData } from "../api/getUbidotsTemperature";
+import { ChartTimePills } from "./ChartTimePills";
 import { SensorCardItem } from "./SensorCardItem";
 import { SensorDataChart } from "./SensorDataChart";
 import { SensorListItem } from "./SensorListItem";
+import * as Skeleton from "./Skeleton";
 
-export const Dashboard = () => {
-  const { name } = useUserStore();
-  const userName = name ?? "User";
+dayjs.extend(relativeTime);
 
-  const { setIsLoading } = React.useContext(LoadingContext);
-  const {
-    sensorData: { gas },
-    latestData,
-    isSensorDataReady,
-    getSensorDescriptiveValue,
-    getSensorNumericValue
-  } = useSensorData();
+export const Dashboard = React.memo(() => {
+  const { name, threshold } = useUserStore();
+  const { setIsLoading } = useContext(LoadingContext);
+  const { signOut } = useAuth();
+  const [latestData, isConnected, lastActive] = useUbidotsStore(state => [
+    state.latestData,
+    state.isConnected,
+    state.lastActive
+  ]);
 
-  const fireDescription = latestData.fire ? "Fire detected" : "None";
+  const humidityQuery = useQuery(["humidity"], getLastHumidityData, { refetchInterval: 1000 * 30 });
+  const temperatureQuery = useQuery(["temperature"], getLastTemperatureData, { refetchInterval: 1000 * 30 });
 
-  // establish mqtt connection
-  // once connected, retrieve last dot data over http
-  // subscribe to last dot over mqtt
-  // on subscribe, if data received, invalidate queries or update data in client
-  const queryClient = useQueryClient();
-  /* create mqtt client */
-  MQTT.createClient({
-    uri: "mqtt://industrial.api.ubidots.com:1883",
-    clientId: "gasulerto",
-    auth: true,
-    user: UBIDOTS_API_KEY,
-    pass: ""
-  })
-    .then(function (client) {
-      client.on("closed", function () {
-        console.log("mqtt.event.closed");
-      });
+  const isPageReady = isConnected && !humidityQuery.isLoading && !temperatureQuery.isLoading && !!threshold;
 
-      client.on("error", function (msg) {
-        console.log("mqtt.event.error", msg);
-      });
+  const isMoreThanMinuteInactive = Boolean(dayjs().diff(dayjs(lastActive), "m"));
+  const dataResampleMutation = useMutation(getUbidotsDataResample);
+  const [timeResample, setTimeResample] = useState(5);
 
-      client.on("message", function (msg) {
-        console.log("mqtt.event.message", msg);
-        queryClient.invalidateQueries({ queryKey: ["temperature", "humidity"] });
-      });
+  const memoizedChart = useMemo(() => {
+    if (!dataResampleMutation.isLoading && dataResampleMutation.data) {
+      return {
+        data: dataResampleMutation.data?.results.map(item => Number(item[1])),
+        labels: dataResampleMutation.data?.results.map(item => Number(item[0]))
+      };
+    }
+  }, [dataResampleMutation.data, dataResampleMutation.isLoading]);
 
-      client.on("connect", function () {
-        console.log("connected");
-        // client.publish("/v1.6/devices/arduino-gasulerto/fire", "0", 0, false);
-        // client.publish("/v1.6/devices/arduino-gasulerto/temperature", "37.2", 0, false);
-        client.subscribe("/v1.6/devices/arduino-gasulerto/temperature", 0);
-      });
+  const confirmLogout = () =>
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Logout",
+          onPress: () => {
+            setIsLoading(true);
+            signOut();
+          }
+        }
+      ],
+      {
+        cancelable: true
+      }
+    );
 
-      client.connect();
-    })
-    .catch(function (err) {
-      console.log(err);
+  useEffect(() => {
+    dataResampleMutation.mutateAsync({
+      variables: [VARIABLE_ID.GAS],
+      aggregation: "mean",
+      period: `${timeResample}T`,
+      join_dataframes: true,
+      start: dayjs().startOf("day").valueOf()
     });
-
-  React.useEffect(() => {
-    console.log({ isSensorDataReady });
-    setIsLoading(!isSensorDataReady);
-  }, [isSensorDataReady, setIsLoading]);
+  }, [timeResample]);
 
   return (
     <Wrapper>
       <ScrollView style={{ flex: 1, width: "100%" }}>
         <Box gap="sm">
-          <Text variant="mediumBold" color="black">
-            Dashboard
-          </Text>
-          <Text color="gray">Good to see you're safe, {userName}</Text>
-          <Box flexDirection="row" justifyContent="space-between" alignItems="center">
-            <Text color="black">Overview</Text>
+          <Box flex={1} flexDirection="row" justifyContent="space-between" alignItems="center">
+            <Text variant="largeMedium" color="black">
+              Dashboard
+            </Text>
+            <Button rounded="circle" bg={theme.colors.danger} fontSize={theme.spacing.sm} onPress={confirmLogout}>
+              <Icon name="logout" size={theme.spacing.md} color={theme.colors.white} />
+            </Button>
           </Box>
-          {(!isSensorDataReady || !gas.data) && <Skeleton.Box mt="sm" h={200} bg={theme.colors.grayLight} />}
-          {isSensorDataReady && gas.data && (
-            <SensorDataChart
-              chartLabels={gas.data.chartLabels}
-              chartData={gas.data.chartData}
-              chartSymbolSuffix="PPM"
-            />
-          )}
-          <Box gap="sm">
-            <Text color="gray">Recent readings</Text>
-            <Box>
-              <SensorListItem title="Gas" {...getSensorNumericValue(SENSOR_TYPES.GAS, latestData.gas)} />
-              <SensorListItem title="Fire" value={fireDescription} isHigh={Boolean(latestData.fire)} />
-              <SensorListItem
-                title="Temperature"
-                {...getSensorNumericValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
+          <Box>
+            <Text color="gray">Welcome back, {name ?? "User"}</Text>
+            <Text color="gray">Here's your overview for today.</Text>
+          </Box>
+          <ChartTimePills
+            defaultSelectedTime={timeResample}
+            isDisabled={dataResampleMutation.isLoading}
+            isLoading={dataResampleMutation.isLoading}
+            onClick={setTimeResample}
+          />
+          {isPageReady && !dataResampleMutation.isLoading && memoizedChart ? (
+            <>
+              <Box>
+                <Text color="black">Gas PPM </Text>
+                <Text color="gray">Averaged every {timeResample} minutes</Text>
+              </Box>
+              <SensorDataChart
+                chartLabels={memoizedChart.labels}
+                chartData={memoizedChart.data}
+                chartSymbolSuffix="PPM"
               />
-              <SensorListItem title="Humidity" {...getSensorNumericValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)} />
+            </>
+          ) : (
+            <Skeleton.Chart />
+          )}
+          <Box borderTopColor="grayLight" borderTopWidth={StyleSheet.hairlineWidth} gap="sm">
+            <Box pt="xs">
+              <Text color="black">Recent readings</Text>
+              {isMoreThanMinuteInactive && (
+                <Text color="gray" variant="smallThin">
+                  Last updated {dayjs().to(dayjs(lastActive))}
+                </Text>
+              )}
+            </Box>
+            <Box>
+              {isPageReady ? (
+                <>
+                  <SensorListItem
+                    title="Gas"
+                    iconName="gas-cylinder"
+                    iconColor={theme.colors.warning}
+                    value={`${latestData.gas} ${MEASUREMENTS.GAS}`}
+                  />
+                  <SensorListItem
+                    title="Fire"
+                    iconName="fire"
+                    iconColor={theme.colors.danger}
+                    value={getFireDescriptiveValue(latestData.flame).value}
+                  />
+                  <SensorListItem
+                    title="Temperature"
+                    iconName="thermometer"
+                    iconColor={theme.colors.success}
+                    value={`${temperatureQuery.data?.results[0].value} ${MEASUREMENTS.TEMPERATURE}`}
+                  />
+                  <SensorListItem
+                    title="Humidity"
+                    iconName="water"
+                    iconColor={theme.colors.primaryDark}
+                    value={`${humidityQuery.data?.results[0].value} ${MEASUREMENTS.HUMIDITY}`}
+                  />
+                </>
+              ) : (
+                Array.from({ length: 4 }).map((_, idx) => <Skeleton.ListItem key={idx} />)
+              )}
             </Box>
           </Box>
           <Box gap="sm" paddingBottom="2xl">
-            <Text color="gray">Sensor summary</Text>
-            <ScrollView horizontal>
-              <Box gap="sm" flexDirection="row">
-                <SensorCardItem
-                  iconName="fire"
-                  title="Fire"
-                  value={fireDescription}
-                  isHigh={Boolean(latestData.fire)}
-                />
-                <SensorCardItem
-                  iconName="gas-cylinder"
-                  title="Gas"
-                  {...getSensorDescriptiveValue(SENSOR_TYPES.GAS, latestData.gas)}
-                />
-                <SensorCardItem
-                  iconName="thermometer"
-                  title="Temperature"
-                  {...getSensorDescriptiveValue(SENSOR_TYPES.TEMPERATURE, latestData.temperature)}
-                />
-                <SensorCardItem
-                  iconName="water"
-                  title="Humidity"
-                  {...getSensorDescriptiveValue(SENSOR_TYPES.HUMIDITY, latestData.humidity)}
-                />
-              </Box>
-            </ScrollView>
+            <Text color="black">Sensor summary</Text>
+            <Box flex={1} flexDirection="column" gap="xs" mb="md">
+              {isPageReady ? (
+                <>
+                  <Box flex={1} flexDirection="row" gap="xs">
+                    <SensorCardItem
+                      iconName="fire"
+                      title="Fire"
+                      idealRange="low"
+                      {...getFireDescriptiveValue(latestData.flame)}
+                    />
+                    <SensorCardItem
+                      iconName="gas-cylinder"
+                      title="Gas"
+                      idealRange="low"
+                      {...getGasDescriptiveValue(latestData.gas)}
+                    />
+                  </Box>
+                  <Box flex={1} flexDirection="row" gap="xs">
+                    <SensorCardItem
+                      iconName="thermometer"
+                      title="Temperature"
+                      idealRange="med"
+                      {...getTemperatureDescriptiveValue(temperatureQuery.data?.results[0].value ?? 0)}
+                    />
+                    <SensorCardItem
+                      iconName="water"
+                      title="Humidity"
+                      idealRange="med"
+                      {...getHumidityDescriptiveValue(humidityQuery.data?.results[0].value ?? 0)}
+                    />
+                  </Box>
+                </>
+              ) : (
+                <Box flex={1} flexDirection="row" gap="xs" mb="md">
+                  {Array.from({ length: 2 }).map((_, idx) => (
+                    <Skeleton.CardItem key={idx} />
+                  ))}
+                </Box>
+              )}
+            </Box>
           </Box>
         </Box>
       </ScrollView>
     </Wrapper>
   );
-};
+});

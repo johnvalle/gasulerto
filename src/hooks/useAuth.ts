@@ -44,7 +44,6 @@ export const useAuth = () => {
       // anonymous user will be logged out 3days from now.
       const threeDaysFromNow = dayjs().add(3, "days").valueOf();
       const userToken = await user.getIdToken();
-      console.log({ threeDaysFromNow });
       // store auth creds to global store
       setUser({
         name: user.displayName,

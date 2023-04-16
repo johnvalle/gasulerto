@@ -20,6 +20,7 @@ export const Input = (props: Props) => {
     <Icon
       name={`${isValid ? "check" : "close"}-circle-outline`}
       color={isValid ? theme.colors.success : theme.colors.danger}
+      size={theme.spacing.md}
     />
   );
   const suffixIcon = props.suffix || validitySuffixIcon;
@@ -37,7 +38,6 @@ export const Input = (props: Props) => {
       <MagnusInput
         placeholder="Enter gas leak threshold"
         my="md"
-        h={40}
         borderColor={!isValid ? theme.colors.danger : theme.colors.grayLight}
         focusBorderColor={theme.colors.primary}
         suffix={suffixIcon}

@@ -1,10 +1,13 @@
-import React from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import firestore from "@react-native-firebase/firestore";
 
 import { FIREBASE } from "@core/constants/firebase";
+import { THRESHOLD } from "@core/constants/sensor";
 import { useUserStore } from "@core/hooks";
 import { Nullable } from "@coreTypes/generics/nullable";
+
+import { useNotifications } from "./useNotifications";
 
 export type UserSettings = {
   threshold: number;
@@ -15,68 +18,81 @@ export type UserSettings = {
 };
 
 export const useUserSettings = () => {
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [userSettings, setUserSettings] = React.useState<Nullable<UserSettings>>(null);
-  const { userId } = useUserStore();
+  const [isRetrieved, setIsRetrieved] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [userSettings, setUserSettings] = useState<Nullable<UserSettings>>(null);
+  const { userId, threshold, setUser } = useUserStore();
+  const { sendInfoNotifications } = useNotifications();
 
   const settings = firestore().collection(FIREBASE.FIRESTORE.SETTINGS);
-  const id = userId as string;
 
-  const getSettings = React.useCallback(async () => {
+  const getSettings = useCallback(async () => {
     try {
-      setIsLoading(true);
-      const user = await settings.doc(id).get();
-      const data = user.data() as Nullable<UserSettings>;
-
-      setIsLoading(false);
-      setUserSettings(data);
-    } catch (error) {
-      setIsLoading(false);
-      console.error("Failed to retrieve user settings", error);
-    }
-  }, [id, settings]);
-
-  const initializeUserSettings = React.useCallback(async () => {
-    try {
-      setIsLoading(true);
-      if (!id) {
+      if (!userId) {
         return;
       }
-      await settings.doc(id).set({ threshold: 300, primaryContact: { name: "911 Services", number: "911" } });
-      setIsLoading(false);
+      setIsLoading(true);
+      const user = await settings.doc(userId).get();
+      const data = user.data() as Nullable<UserSettings>;
+
+      setUserSettings(data);
+      setUser({ threshold: data?.threshold });
     } catch (error) {
+      console.error("Failed to retrieve user settings", error);
+    } finally {
       setIsLoading(false);
-      console.error("Failed to initialize user settings", error);
+      setIsRetrieved(true);
     }
-  }, [id, settings]);
+  }, [userId, settings]);
+
+  const initializeUserSettings = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      if (!userId) {
+        return;
+      }
+      await settings
+        .doc(userId)
+        .set({ threshold: THRESHOLD.GAS, primaryContact: { name: "911 Services", number: "911" } });
+      setUser({ threshold: THRESHOLD.GAS });
+    } catch (error) {
+      console.error("Failed to initialize user settings", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [userId, settings, isRetrieved]);
 
   const updateUserSettings = async (data: UserSettings) => {
     try {
       setIsLoading(true);
-      if (!id) {
+      if (!userId) {
         return;
       }
-      await settings.doc(id).set({ threshold: data.threshold, primaryContact: data.primaryContact });
-      setIsLoading(false);
+      sendInfoNotifications();
+      settings.doc(userId).set({ threshold: data.threshold, primaryContact: data.primaryContact });
     } catch (error) {
-      setIsLoading(false);
       console.error("Failed to update threshold", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  React.useEffect(() => {
-    const unsubscribe = settings.doc(id).onSnapshot(getSettings);
+  useEffect(() => {
+    if (userId) {
+      const unsubscribe = settings.doc(userId).onSnapshot(getSettings);
+      return () => unsubscribe();
+    }
+  }, [userId]);
 
-    return () => unsubscribe();
-  }, []);
-
-  React.useEffect(() => {
-    if (!isLoading && !userSettings) {
+  useEffect(() => {
+    if (isRetrieved && !threshold) {
       initializeUserSettings();
     }
-  }, [isLoading, userSettings, initializeUserSettings]);
+  }, [isRetrieved, threshold]);
 
   return {
+    getSettings,
+    initializeUserSettings,
     updateUserSettings,
     userSettings,
     isLoading

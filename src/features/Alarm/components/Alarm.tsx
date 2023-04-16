@@ -1,15 +1,48 @@
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import { useContext, useEffect } from "react";
+import { Image, Linking, StyleSheet, TouchableOpacity, Vibration } from "react-native";
+import { Button } from "react-native-magnus";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { Box, Text, Wrapper } from "@core/components";
 import theme from "@core/constants/theme";
+import { LoadingContext } from "@core/contexts/LoadingContext";
+import { useUserSettings } from "@core/hooks";
+import { useBuzzerSoundStore } from "@core/hooks/useBuzzerSoundStore";
+import { AppScreen, ScreenProps } from "@core/types/navigation";
 
 import GasDetected from "@assets/images/gas-detected.png";
 
-export const Alarm = () => {
+export const Alarm = ({ navigation }: ScreenProps<AppScreen.Alarm>) => {
+  const { userSettings, isLoading: isSettingsLoading } = useUserSettings();
+  const { setIsLoading } = useContext(LoadingContext);
+  const { sound } = useBuzzerSoundStore();
+
+  const callPrimaryContact = () => {
+    Vibration.cancel();
+    sound?.stop();
+    return Linking.openURL(`tel:${userSettings?.primaryContact.number}`);
+  };
+
+  const cancelAlarm = () => {
+    Vibration.cancel();
+    sound?.stop();
+    return navigation.navigate(AppScreen.Home);
+  };
+
+  useEffect(() => {
+    if (sound !== null) {
+      sound.play();
+      Vibration.vibrate([200, 200, 200], true);
+    }
+  }, [sound]);
+
+  useEffect(() => {
+    setIsLoading(isSettingsLoading);
+  }, [isSettingsLoading, setIsLoading]);
+
   return (
     <Wrapper>
-      <Box justifyContent="center" alignItems="center" paddingVertical="md">
+      <Box justifyContent="center" alignItems="center">
         <Text variant="extraLargeBold" color="danger" marginVertical="sm">
           Warning
         </Text>
@@ -24,13 +57,26 @@ export const Alarm = () => {
               Are you currently away from home?
             </Text>
             <Text variant="mediumBold" color="black" textAlign="center">
-              Call a primary contact
+              Call {userSettings?.primaryContact.name}
             </Text>
           </Box>
-          <TouchableOpacity style={styles.callButton}>
+          <TouchableOpacity style={styles.callButton} onPress={callPrimaryContact}>
             <Icon name="phone" size={theme.spacing.md} color={theme.colors.white} />
           </TouchableOpacity>
         </Box>
+        <Text color="gray" textAlign="center" mt="md">
+          If this was caused by a false alarm or the leakage has been attended to, please click close
+        </Text>
+        <Button
+          mt="md"
+          bg="white"
+          alignSelf="center"
+          suffix={<Icon name="close" size={theme.spacing.md} color={theme.colors.gray} />}
+          onPress={cancelAlarm}>
+          <Text color="gray" variant="mediumBold">
+            Close
+          </Text>
+        </Button>
       </Box>
     </Wrapper>
   );
@@ -44,6 +90,6 @@ const styles = StyleSheet.create({
   },
   bannerImage: {
     width: 380,
-    height: 475
+    height: 400
   }
 });

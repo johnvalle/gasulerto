@@ -2,8 +2,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { Box } from "@core/components";
 import theme from "@core/constants/theme";
-
-import { NotificationType } from "../types/components";
+import { NotificationType } from "@coreTypes/notification";
 
 type Props = {
   type: NotificationType;
@@ -13,15 +12,15 @@ export const NotificationIcon = (props: Props) => {
   const { type } = props;
 
   const getIconName = () => {
-    if (type === "info") {
+    if (type === NotificationType.INFO) {
       return "information";
     }
 
-    if (type === "danger") {
+    if (type === NotificationType.DANGER) {
       return "alert-circle";
     }
 
-    if (type === "warning") {
+    if (type === NotificationType.WARNING) {
       return "alert";
     }
 

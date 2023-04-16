@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { Image, KeyboardAvoidingView, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { Box, Text, Wrapper } from "@core/components";
 import theme from "@core/constants/theme";
-import { LoadingContext } from "@core/contexts/LoadingContext";
-import { useAuth, useUserSettings } from "@core/hooks";
+import { useUserSettings, useUserStore } from "@core/hooks";
 
 import SettingsPageBanner from "@assets/images/settings-page.png";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,21 +15,9 @@ import { SettingsFormInput, SettingsFormResolver } from "../types/SettingsFormIn
 import { SettingsForm } from "./SettingsForm";
 import { SettingsFormLoader } from "./SettingsFormLoader";
 
-export const Settings = () => {
-  const { setIsLoading } = useContext(LoadingContext);
-  const { signOut } = useAuth();
+export const Settings = React.memo(() => {
+  const { isAnonymous } = useUserStore();
   const { updateUserSettings, userSettings, isLoading: isSettingsLoading } = useUserSettings();
-
-  const signOutUser = async () => {
-    setIsLoading(true);
-    try {
-      await signOut();
-    } catch (err) {
-      console.error(err, "Failed to signout");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const methods = useForm<SettingsFormInput>({
     resolver: zodResolver(SettingsFormResolver)
@@ -46,35 +34,50 @@ export const Settings = () => {
 
   return (
     <Wrapper>
-      <ScrollView>
+      <ScrollView style={{ width: "100%" }}>
         <KeyboardAvoidingView>
-          <Box>
+          <Box gap="sm" flex={1} width="100%">
             <Image source={SettingsPageBanner} style={styles.imageBanner} resizeMode="contain" />
-            <Text variant="mediumBold" color="black" marginVertical="md" textAlign="center">
-              Settings
-            </Text>
-            {!userSettings && isSettingsLoading ? (
+            <Box flex={1} flexDirection="row" justifyContent="space-between">
+              <Box>
+                <Text variant="largeMedium" color="black">
+                  Settings
+                </Text>
+                {isAnonymous && <Text color="gray">Create account using Google to edit settings.</Text>}
+                {methods.formState.isDirty && <Text color="gray">You have unsaved changes.</Text>}
+              </Box>
+              {methods.formState.isDirty && (
+                <Box flex={1} flexDirection="row" gap="xs" alignItems="center" justifyContent="flex-end">
+                  <Button
+                    loading={methods.formState.isSubmitting}
+                    rounded="circle"
+                    onPress={methods.handleSubmit(updateUserSettings)}
+                    bg={theme.colors.success}>
+                    <Icon name="content-save-check" color={theme.colors.white} size={theme.spacing.sm} />
+                  </Button>
+                  <Button
+                    onPress={() => methods.reset()}
+                    bg={theme.colors.gray}
+                    rounded="circle"
+                    disabled={methods.formState.isSubmitting}>
+                    <Icon name="undo" color={theme.colors.white} size={theme.spacing.sm} />
+                  </Button>
+                </Box>
+              )}
+            </Box>
+            {userSettings === null && isSettingsLoading ? (
               <SettingsFormLoader />
             ) : (
               <FormProvider {...methods}>
-                <SettingsForm userSettings={userSettings} onSubmit={updateUserSettings} />
+                <SettingsForm userSettings={userSettings} />
               </FormProvider>
             )}
-            <Button
-              bg={theme.colors.gray}
-              w="100%"
-              mt={theme.spacing.xl}
-              onPress={() => signOutUser()}
-              {...theme.textVariants.smallBold}
-              disabled={isSettingsLoading}>
-              Logout
-            </Button>
           </Box>
         </KeyboardAvoidingView>
       </ScrollView>
     </Wrapper>
   );
-};
+});
 
 const styles = StyleSheet.create({
   logoutButton: {
@@ -87,7 +90,7 @@ const styles = StyleSheet.create({
     marginVertical: theme.spacing.sm
   },
   imageBanner: {
-    width: 300,
+    width: "100%",
     height: 200
   }
 });
