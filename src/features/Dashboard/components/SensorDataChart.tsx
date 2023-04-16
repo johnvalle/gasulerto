@@ -5,7 +5,6 @@ import { LineChart } from "react-native-chart-kit";
 
 import { Box, Text } from "@core/components";
 import theme from "@core/constants/theme";
-import { useUserStore } from "@core/hooks/useUserStore";
 import { getGasDescriptiveValue } from "@core/utils/sensor";
 
 type Props = {
@@ -16,9 +15,6 @@ type Props = {
 
 export const SensorDataChart = React.memo((props: Props) => {
   const { chartData, chartLabels, chartSymbolSuffix } = props;
-
-  // asserting type as user wont be able to access the page without logging in.
-  const threshold = useUserStore(state => state.threshold) as number;
 
   const formattedChartLabels = useMemo(() => {
     return chartLabels.map(timeStamp => dayjs(timeStamp).format("h:mm A"));
