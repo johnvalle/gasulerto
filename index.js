@@ -37,13 +37,10 @@ Pushy.setNotificationListener(async data => {
   const notificationTitle = data.title;
   const notificationText = data.message;
   const notificationType = data.type;
+  Pushy.notify(notificationTitle, notificationText, data);
 
-  if (!!useUserStore.getState().token) {
-    Pushy.notify(notificationTitle, notificationText, data);
-
-    if (notificationType === "danger") {
-      RootNavigation.navigate("Alarm");
-      Vibration.vibrate([200, 200, 200], true);
-    }
+  if (notificationType === "danger") {
+    RootNavigation.navigate("Alarm");
+    Vibration.vibrate([200, 200, 200], true);
   }
 });

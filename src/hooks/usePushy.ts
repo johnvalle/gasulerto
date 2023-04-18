@@ -44,4 +44,8 @@ export const usePushy = () => {
       }
     })();
   }, [threshold]);
+
+  return {
+    removePreviousSubscriptions
+  };
 };
