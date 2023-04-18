@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
@@ -17,6 +18,8 @@ import AuthenticatedStack from "./AuthenticatedStack";
 import { navigationRef } from "./RootNavigation";
 import UnauthenticatedStack from "./UnauthenticatedStack";
 
+dayjs.extend(relativeTime);
+
 export const AppNavigation = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,10 +36,9 @@ export const AppNavigation = () => {
   };
 
   // watch hydration on initial app load
-  const unsubcribe = useUserStore.persist.onFinishHydration(state => {
+  useUserStore.persist.onFinishHydration(state => {
     watchTokenExpiration(state);
     setIsLoading(false);
-    return unsubcribe();
   });
 
   useUserSettings();
@@ -60,6 +62,12 @@ export const AppNavigation = () => {
       Alert.alert("Connection lost", "Please connect to an stable internet connection to continue using the app.");
     }
   }, [isConnected, isInternetReachable]);
+
+  useEffect(() => {
+    if (useUserStore.persist.hasHydrated()) {
+      setIsLoading(false);
+    }
+  }, [isLoading]);
 
   return (
     <>
