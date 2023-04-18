@@ -53,18 +53,11 @@ const publishToPushy = (topics, message, notificationType) => {
   return axios.post("https://api.pushy.me/push", payload, { params: { api_key: functions.config().pushy.apikey } });
 };
 
-const getNotificationRecipients = value => {
-  const alertListeners = THRESHOLD_LIST.filter(lvl => value >= lvl);
-  const warningListeners = THRESHOLD_LIST.filter(
-    (lvl, idx) => value >= lvl - WARNING_LEVEL && value < THRESHOLD_LIST[idx]
-  );
-  return { alertListeners, warningListeners };
+const getExpectedWarningRecipient = value => {
+  return THRESHOLD_LIST.filter((lvl, idx) => value >= lvl - WARNING_LEVEL && value < THRESHOLD_LIST[idx]);
 };
 
 const sendNotification = (thresholdLevels, notification, notificationType) => {
-  if (thresholdLevels.length === 0) {
-    return false;
-  }
   return db
     .collection("settings")
     .where("threshold", "in", thresholdLevels)
@@ -79,17 +72,17 @@ const sendNotification = (thresholdLevels, notification, notificationType) => {
           createFirestoreNotification(userIdsBasedOnThreshold, notification, notificationType)
             .then(isSent => !!isSent)
             .catch(err => {
-              console.log("Failed to create firestore notifications", err);
+              console.error("Failed to create firestore notifications", err);
               return err;
             });
         })
         .catch(err => {
-          console.log("Failed to send push notifications");
+          console.error("Failed to send push notifications", err);
           return err;
         });
     })
     .catch(err => {
-      console.log("Failed to retrieve notifications");
+      console.error("Failed to retrieve settings", err);
       return err;
     });
 };
@@ -116,48 +109,39 @@ exports.sendFireNotifications = functions.https.onRequest((req, res) => {
 });
 
 exports.sendGasNotifications = functions.https.onRequest((req, res) => {
-  const triggerValue = req.body.triggerValue;
   const expectedNotificationType = req.body.type;
+  const intendedRecipients = [req.body.recipient];
+  const triggerValue = req.body.triggerValue;
+  const isWarning = expectedNotificationType === "warning";
+  const expectedRecipients = getExpectedWarningRecipient(triggerValue);
 
-  const { alertListeners, warningListeners } = getNotificationRecipients(triggerValue);
+  console.log(JSON.stringify({ intendedRecipients, expectedRecipients, triggerValue, expectedNotificationType }));
 
-  const expectsWarningNoListeners = expectedNotificationType === "warning" && warningListeners.length === 0;
-  const expectsAlertNoListeners = expectedNotificationType === "danger" && alertListeners.length === 0;
-  if (expectsAlertNoListeners || expectsWarningNoListeners) {
+  if (isWarning && !expectedRecipients.includes(req.body.recipient)) {
+    console.log("mismatch");
     return res.send(200);
   }
 
-  console.log(
-    JSON.stringify({ recipients: { alertListeners, warningListeners }, triggerValue: req.body.triggerValue })
-  );
+  const warningMessage = {
+    title: "Warning",
+    message: "Gas leak threshold is almost exceeded"
+  };
 
-  const sendWarningNotification = sendNotification(
-    warningListeners,
-    {
-      title: "Warning",
-      message: "Gas leak threshold is almost exceeded"
-    },
-    "warning"
-  );
+  const alertMessage = {
+    title: "Alert",
+    message: "Gas leak threshold was exceeded"
+  };
 
-  const sendAlertNotification = sendNotification(
-    alertListeners,
-    {
-      title: "Alert",
-      message: "Gas leak threshold was exceeded"
-    },
-    "danger"
-  );
+  const message = isWarning ? warningMessage : alertMessage;
 
-  return Promise.allSettled([sendWarningNotification, sendAlertNotification])
-    .then(results => {
-      if (results.every(({ status }) => status === "fulfilled")) {
-        return res.status(200).send({ message: "Gas notifications sent" });
-      } else {
-        throw Error("Failed to send notifications");
-      }
+  return sendNotification(intendedRecipients, message, expectedNotificationType)
+    .then(() => {
+      res.status(200).send({ message: "Gas notifications sent" });
     })
-    .catch(err => res.status(400).send({ err }));
+    .catch(err => {
+      console.error(err);
+      res.status(400).send({ err });
+    });
 });
 
 exports.scheduledUbidotsCleanup = functions.pubsub
