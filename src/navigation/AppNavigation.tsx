@@ -63,12 +63,6 @@ export const AppNavigation = () => {
     }
   }, [isConnected, isInternetReachable]);
 
-  useEffect(() => {
-    if (useUserStore.persist.hasHydrated()) {
-      setIsLoading(false);
-    }
-  }, [isLoading]);
-
   return (
     <>
       {isLoading ? <Loader /> : null}

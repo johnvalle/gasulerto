@@ -41,6 +41,13 @@ Pushy.setNotificationListener(async data => {
 
   if (notificationType === "danger") {
     RootNavigation.navigate("Alarm");
-    Vibration.vibrate([200, 200, 200], true);
+  }
+});
+
+Pushy.setNotificationClickListener(async data => {
+  const notificationType = data.type;
+
+  if (notificationType === "danger") {
+    RootNavigation.navigate("Alarm");
   }
 });
