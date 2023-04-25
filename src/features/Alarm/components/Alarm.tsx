@@ -12,7 +12,7 @@ import { AppScreen, ScreenProps } from "@core/types/navigation";
 
 import GasDetected from "@assets/images/gas-detected.png";
 
-export const Alarm = ({ navigation }: ScreenProps<AppScreen.Alarm>) => {
+export const Alarm = ({ navigation, route: { params } }: ScreenProps<AppScreen.Alarm>) => {
   const { userSettings, isLoading: isSettingsLoading } = useUserSettings();
   const { setIsLoading } = useContext(LoadingContext);
   const { sound } = useBuzzerSoundStore();
@@ -47,7 +47,7 @@ export const Alarm = ({ navigation }: ScreenProps<AppScreen.Alarm>) => {
           Warning
         </Text>
         <Text variant="largeMedium" color="black" textAlign="center">
-          Gas leakage has been detected.
+          {params?.message ?? "Gas leakage has been detected."}
         </Text>
 
         <Image source={GasDetected} style={styles.bannerImage} resizeMode="contain" />

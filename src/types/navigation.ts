@@ -10,7 +10,13 @@ export enum AppScreen {
   Home = "Home"
 }
 
-export type RootStackParamList = { [T in AppScreen]: undefined };
+type AlarmProps = {
+  [AppScreen.Alarm]: {
+    message: string;
+  };
+};
+
+export type RootStackParamList = { [T in AppScreen]: any | undefined } & AlarmProps;
 export type ScreenProps<T extends AppScreen> = NativeStackScreenProps<RootStackParamList, T>;
 export type RouteParam = {
   route: RouteProp<ParamListBase, string>;

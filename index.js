@@ -1,11 +1,10 @@
 import Pushy from "pushy-react-native";
-import { AppRegistry, LogBox, Text, TextInput, Vibration } from "react-native";
+import { AppRegistry, LogBox, Text, TextInput } from "react-native";
 import Sound from "react-native-sound";
 
 import App from "./App";
 import { name as appName } from "./app.json";
 import { useBuzzerSoundStore } from "./src/hooks/useBuzzerSoundStore";
-import { useUserStore } from "./src/hooks/useUserStore";
 import * as RootNavigation from "./src/navigation/RootNavigation";
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
@@ -40,7 +39,7 @@ Pushy.setNotificationListener(async data => {
   Pushy.notify(notificationTitle, notificationText, data);
 
   if (notificationType === "danger") {
-    RootNavigation.navigate("Alarm");
+    RootNavigation.navigate("Alarm", { message: data.message });
   }
 });
 
@@ -48,6 +47,6 @@ Pushy.setNotificationClickListener(async data => {
   const notificationType = data.type;
 
   if (notificationType === "danger") {
-    RootNavigation.navigate("Alarm");
+    RootNavigation.navigate("Alarm", { message: data.message });
   }
 });
