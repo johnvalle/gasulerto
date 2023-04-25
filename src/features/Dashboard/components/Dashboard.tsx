@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Alert, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
@@ -29,10 +28,8 @@ import { SensorDataChart } from "./SensorDataChart";
 import { SensorListItem } from "./SensorListItem";
 import * as Skeleton from "./Skeleton";
 
-dayjs.extend(relativeTime);
-
 export const Dashboard = React.memo(() => {
-  const { name, threshold } = useUserStore();
+  const { name, threshold, expiresOn, isAnonymous } = useUserStore();
   const { setIsLoading } = useContext(LoadingContext);
   const { signOut } = useAuth();
   const [latestData, isConnected, lastActive] = useUbidotsStore(state => [
@@ -59,10 +56,14 @@ export const Dashboard = React.memo(() => {
     }
   }, [dataResampleMutation.data, dataResampleMutation.isLoading]);
 
+  const baseMessage = "Are you sure you want to logout?";
+  const confirmationMessage = !isAnonymous
+    ? baseMessage
+    : `${baseMessage} You may stay logged in as a guest for ${dayjs(expiresOn).toNow(true)}.`;
   const confirmLogout = () =>
     Alert.alert(
       "Logout",
-      "Are you sure you want to logout?",
+      confirmationMessage,
       [
         {
           text: "Cancel",

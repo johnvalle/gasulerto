@@ -6,8 +6,11 @@ import auth from "@react-native-firebase/auth";
 
 import { useUserStore } from "@core/hooks";
 
+import { usePushy } from "./usePushy";
+
 export const useAuth = () => {
   const { setUser, logOut, token, expiresOn } = useUserStore();
+  const pushy = usePushy();
 
   const signInUsingGoogle = async (): Promise<void> => {
     try {
@@ -63,6 +66,7 @@ export const useAuth = () => {
     try {
       if (token) {
         await auth().signOut();
+        await pushy.removePreviousSubscriptions();
       }
       logOut();
       await useUserStore.persist.rehydrate();
