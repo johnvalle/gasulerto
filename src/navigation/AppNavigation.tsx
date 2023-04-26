@@ -8,14 +8,17 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Loader } from "@core/components";
 import { LoadingContext } from "@core/contexts/LoadingContext";
 import { useAuth, useUserSettings, useUserStore } from "@core/hooks";
-import { usePushy } from "@core/hooks/usePushy";
+import { useFCM } from "@core/hooks/useFCM";
 import { useUbidotsMqtt } from "@core/hooks/useUbidotsMqtt";
 import { UserStore } from "@core/hooks/useUserStore";
+import { AppScreen } from "@core/types/navigation";
 
+import notifee from "@notifee/react-native";
 import { useNetInfo } from "@react-native-community/netinfo";
 
 import AuthenticatedStack from "./AuthenticatedStack";
 import { navigationRef } from "./RootNavigation";
+import * as RootNavigation from "./RootNavigation";
 import UnauthenticatedStack from "./UnauthenticatedStack";
 
 dayjs.extend(relativeTime);
@@ -49,8 +52,8 @@ export const AppNavigation = () => {
   // Subscribe to Ubidots MQTT
   useUbidotsMqtt();
 
-  // Subscribe to push notifications using Pushy
-  usePushy();
+  // Subscribe to push notifications using FCM
+  useFCM();
 
   // Listen to internet connection
   const { isConnected, isInternetReachable } = useNetInfo();
@@ -62,6 +65,40 @@ export const AppNavigation = () => {
       Alert.alert("Connection lost", "Please connect to an stable internet connection to continue using the app.");
     }
   }, [isConnected, isInternetReachable]);
+
+  useEffect(() => {
+    (async () => {
+      const initialNotification = await notifee.getInitialNotification();
+      if (initialNotification) {
+        const { pressAction, notification } = initialNotification;
+        if (pressAction && pressAction.id === "gasulerto-danger-click") {
+          RootNavigation.navigate(AppScreen.Alarm, { message: notification.body });
+        }
+      }
+
+      const batteryOptimizationEnabled = await notifee.isBatteryOptimizationEnabled();
+      if (batteryOptimizationEnabled) {
+        // 2. ask your users to disable the feature
+        Alert.alert(
+          "Restrictions Detected",
+          "To ensure notifications are delivered, please disable battery optimization for the app and make sure app never goes to sleep.",
+          [
+            // 3. launch intent to navigate the user to the appropriate screen
+            {
+              text: "OK, open settings",
+              onPress: async () => await notifee.openBatteryOptimizationSettings()
+            },
+            {
+              text: "Cancel",
+              onPress: () => console.log("Cancel Pressed"),
+              style: "cancel"
+            }
+          ],
+          { cancelable: false }
+        );
+      }
+    })();
+  }, []);
 
   return (
     <>

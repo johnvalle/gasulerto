@@ -44,13 +44,24 @@ const createFirestoreNotification = (recipients, notification, notificationType)
   });
 };
 
-const publishToPushy = (topics, message, notificationType) => {
+const sendFCM = (topics, message, notificationType) => {
+  const condition = topics.reduce(
+    (prev, topic, idx) => `${prev}'${topic}' in topics${idx === topics.length - 1 ? "" : " && "}`,
+    ""
+  );
+  console.log("FCM Condition: ", condition);
   const payload = {
-    to: topics,
-    data: { title: "Gasulerto", message: message, type: notificationType },
-    notification: { title: notificationType, body: message, badge: 1 }
+    android: {
+      priority: "high"
+    },
+    data: {
+      title: "Gasulerto",
+      body: message,
+      type: notificationType
+    },
+    condition: condition
   };
-  return axios.post("https://api.pushy.me/push", payload, { params: { api_key: functions.config().pushy.apikey } });
+  return admin.messaging().send(payload);
 };
 
 const getExpectedWarningRecipient = value => {
@@ -65,9 +76,7 @@ const sendNotification = (thresholdLevels, notification, notificationType) => {
     .then(settingsSnapshot => {
       if (settingsSnapshot.empty) return null;
       const userIdsBasedOnThreshold = settingsSnapshot.docs.map(doc => doc.id);
-      const recipients = thresholdLevels.map(level => `/topics/${level}`);
-
-      return publishToPushy(recipients, notification.message, notificationType)
+      return sendFCM([thresholdLevels], notification.message, notificationType)
         .then(() => {
           createFirestoreNotification(userIdsBasedOnThreshold, notification, notificationType)
             .then(isSent => !!isSent)
@@ -118,8 +127,8 @@ exports.sendGasNotifications = functions.https.onRequest((req, res) => {
   console.log(JSON.stringify({ intendedRecipients, expectedRecipients, triggerValue, expectedNotificationType }));
 
   if (isWarning && !expectedRecipients.includes(req.body.recipient)) {
-    console.log("mismatch");
-    return res.send(200);
+    console.log(`Mismatching recipients - Expected: ${expectedRecipients}, got ${intendedRecipients}`);
+    return res.sendStatus(200);
   }
 
   const warningMessage = {
