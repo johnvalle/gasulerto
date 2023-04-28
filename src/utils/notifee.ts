@@ -1,6 +1,6 @@
 import { NOTIFEE } from "@core/constants/notifee";
 
-import notifee, { AndroidImportance, AndroidVisibility } from "@notifee/react-native";
+import notifee, { AndroidColor, AndroidImportance, AndroidVisibility } from "@notifee/react-native";
 
 export const notifeeNotifications = (() => {
   const init = async () => {
@@ -20,6 +20,7 @@ export const notifeeNotifications = (() => {
       id: NOTIFEE.CHANNEL.WARNINGS,
       name: "Warnings",
       bypassDnd: true,
+      sound: "default",
       importance: AndroidImportance.HIGH,
       visibility: AndroidVisibility.PUBLIC
     });
@@ -33,6 +34,7 @@ export const notifeeNotifications = (() => {
         lightUpScreen: true,
         loopSound: true,
         sound: "buzzer",
+        smallIcon: "ic_notification",
         channelId: NOTIFEE.CHANNEL.ALERTS,
         importance: AndroidImportance.HIGH,
         visibility: AndroidVisibility.PUBLIC,
@@ -49,10 +51,12 @@ export const notifeeNotifications = (() => {
       title: notification.title,
       body: notification.message,
       android: {
+        lightUpScreen: true,
+        sound: "default",
+        smallIcon: "ic_notification",
         channelId: NOTIFEE.CHANNEL.WARNINGS,
         importance: AndroidImportance.DEFAULT,
         visibility: AndroidVisibility.PUBLIC,
-        lightUpScreen: true,
         pressAction: {
           id: NOTIFEE.PRESS_ACTION.WARNING,
           launchActivity: "default"
