@@ -21,7 +21,10 @@ export const usePushy = () => {
   useEffect(() => {
     (async () => {
       if (!threshold) return;
-      Pushy.listen();
+      /**
+       * Commenting pushy listener as we're using FCM listeners in index.js
+       */
+      // Pushy.listen();
       Pushy.setNotificationIcon("ic_notification");
       if (Platform.OS === "android") {
         Pushy.toggleFCM(true);
