@@ -16,7 +16,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <MagnusUIProvider>
-          <StatusBar barStyle="dark-content" backgroundColor={"#FFFFFF"} />
+          <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
           <ErrorBoundary>
             <AppNavigation />
           </ErrorBoundary>

@@ -18,6 +18,9 @@ export const SensorCardItem = (props: Props) => {
   const isRangeIdeal = idealRange ? range === idealRange : range !== "high";
   const indicatorIcon = isRangeIdeal ? "check-circle" : "close-circle";
   const indicatorColor = isRangeIdeal ? theme.colors.success : theme.colors.danger;
+
+  const isInvalid = Number.isNaN(value) || !range;
+
   return (
     <Box
       flex={1}
@@ -36,7 +39,11 @@ export const SensorCardItem = (props: Props) => {
         position="absolute"
         top={theme.spacing.xs}
         right={theme.spacing.xs}>
-        <Icon name={indicatorIcon} size={theme.spacing.md} color={indicatorColor} />
+        <Icon
+          name={isInvalid ? "minus-circle" : indicatorIcon}
+          size={theme.spacing.md}
+          color={isInvalid ? theme.colors.gray : indicatorColor}
+        />
       </Box>
       <Icon name={iconName} size={theme.spacing.md} color={theme.colors.primary} />
       <Box>

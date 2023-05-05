@@ -13,25 +13,25 @@ export const useUbidotsMqtt = () => {
 
   const handleSensorData = (msg: Message) => {
     let obj = {} as Partial<UbidotsStore["latestData"]>;
-
-    const time = JSON.parse(msg.data).timestamp;
-    const isSavedDataOld = dayjs(lastActive).isBefore(JSON.parse(msg.data).timestamp);
+    const data = typeof msg.data === "object" ? JSON.parse(msg.data) : {};
+    const time = data.timestamp;
+    const isSavedDataOld = dayjs(lastActive).isBefore(time);
     if (isSavedDataOld || !lastActive) {
       setLastActive(time);
     }
-    const data = Number(JSON.parse(msg.data).value);
+    const value = Number(data.value);
     switch (msg.topic) {
       case MQTT_TOPIC.GAS:
-        obj = { gas: data };
+        obj = { gas: value };
         break;
       case MQTT_TOPIC.HUMIDITY:
-        obj = { humidity: data };
+        obj = { humidity: value };
         break;
       case MQTT_TOPIC.TEMPERATURE:
-        obj = { temperature: data };
+        obj = { temperature: value };
         break;
       case MQTT_TOPIC.FLAME:
-        obj = { flame: data };
+        obj = { flame: value };
         break;
       default:
         break;
