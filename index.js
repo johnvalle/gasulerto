@@ -2,10 +2,13 @@ import Pushy from "pushy-react-native";
 import { AppRegistry, LogBox, Text, TextInput } from "react-native";
 import Sound from "react-native-sound";
 
+import messaging from "@react-native-firebase/messaging";
+
 import App from "./App";
 import { name as appName } from "./app.json";
 import { useBuzzerSoundStore } from "./src/hooks/useBuzzerSoundStore";
 import * as RootNavigation from "./src/navigation/RootNavigation";
+import { notifeeNotifications } from "./src/utils/notifee";
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]);
 // Disable font scaling and maintain true app font size
@@ -32,21 +35,24 @@ const buzzerSound = new Sound("buzzer.mp3", Sound.MAIN_BUNDLE, err => {
   useBuzzerSoundStore.getState().setSound(buzzerSound);
 });
 
-Pushy.setNotificationListener(async data => {
-  const notificationTitle = data.title;
-  const notificationText = data.message;
-  const notificationType = data.type;
-  Pushy.notify(notificationTitle, notificationText, data);
+// Setup notification channels
+notifeeNotifications.init();
 
-  if (notificationType === "danger") {
-    RootNavigation.navigate("Alarm", { message: data.message });
+// Register foreground notification handler
+messaging().onMessage(async remoteMessage => {
+  const notification = JSON.parse(remoteMessage.data._pushyPayload);
+  if (notification.type === "danger") {
+    RootNavigation.navigate("Alarm", { message: notification.message });
   }
 });
 
-Pushy.setNotificationClickListener(async data => {
-  const notificationType = data.type;
+// Register background notification handler
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  const notification = JSON.parse(remoteMessage.data._pushyPayload);
 
-  if (notificationType === "danger") {
-    RootNavigation.navigate("Alarm", { message: data.message });
+  if (notification.type === "danger") {
+    notifeeNotifications.displayAlertNotifications(notification);
+  } else {
+    notifeeNotifications.displayWarningNotification(notification);
   }
 });
