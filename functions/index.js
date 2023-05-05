@@ -149,8 +149,23 @@ exports.scheduledUbidotsCleanup = functions.pubsub
   .timeZone("Asia/Manila")
   .onRun(context => {
     cleanupUbidots();
+    cleanupNotifications();
     return null;
   });
+
+const cleanupNotifications = () => {
+  return new Promise((resolve, reject) =>
+    db
+      .collection("notifications")
+      .get()
+      .then(notifsSnapshot => {
+        if (notifsSnapshot.empty) return null;
+        notifsSnapshot.forEach(notif => notif.ref.delete());
+        resolve();
+      })
+      .catch(err => reject(err))
+  );
+};
 
 const cleanupUbidots = () => {
   const variableKeys = {
