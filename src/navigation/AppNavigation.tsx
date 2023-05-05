@@ -8,7 +8,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Loader } from "@core/components";
 import { LoadingContext } from "@core/contexts/LoadingContext";
 import { useAuth, useUserSettings, useUserStore } from "@core/hooks";
-import { usePushy } from "@core/hooks/usePushy";
+import { useNotificationClickListener } from "@core/hooks/useNotificationClickListener";
 import { useUbidotsMqtt } from "@core/hooks/useUbidotsMqtt";
 import { UserStore } from "@core/hooks/useUserStore";
 
@@ -49,8 +49,7 @@ export const AppNavigation = () => {
   // Subscribe to Ubidots MQTT
   useUbidotsMqtt();
 
-  // Subscribe to push notifications using Pushy
-  usePushy();
+  useNotificationClickListener();
 
   // Listen to internet connection
   const { isConnected, isInternetReachable } = useNetInfo();
