@@ -12,31 +12,36 @@ export const useUbidotsMqtt = () => {
   const { lastActive, setLastActive, setHasGasLeak, setLatestData, setIsConnected } = useUbidotsStore.getState();
 
   const handleSensorData = (msg: Message) => {
-    let obj = {} as Partial<UbidotsStore["latestData"]>;
-    const data = typeof msg.data === "object" ? JSON.parse(msg.data) : {};
-    const time = data.timestamp;
-    const isSavedDataOld = dayjs(lastActive).isBefore(time);
-    if (isSavedDataOld || !lastActive) {
-      setLastActive(time);
+    try {
+      let obj = {} as Partial<UbidotsStore["latestData"]>;
+      const data = typeof msg.data === "string" && !!msg.data ? JSON.parse(msg.data) : {};
+      const time = data.timestamp;
+      const isSavedDataOld = dayjs(lastActive).isBefore(time);
+      if (isSavedDataOld || !lastActive) {
+        setLastActive(time);
+      }
+
+      const value = Number(data.value);
+      switch (msg.topic) {
+        case MQTT_TOPIC.GAS:
+          obj = { gas: value };
+          break;
+        case MQTT_TOPIC.HUMIDITY:
+          obj = { humidity: value };
+          break;
+        case MQTT_TOPIC.TEMPERATURE:
+          obj = { temperature: value };
+          break;
+        case MQTT_TOPIC.FLAME:
+          obj = { flame: value };
+          break;
+        default:
+          break;
+      }
+      setLatestData(obj);
+    } catch (error) {
+      console.error({ error });
     }
-    const value = Number(data.value);
-    switch (msg.topic) {
-      case MQTT_TOPIC.GAS:
-        obj = { gas: value };
-        break;
-      case MQTT_TOPIC.HUMIDITY:
-        obj = { humidity: value };
-        break;
-      case MQTT_TOPIC.TEMPERATURE:
-        obj = { temperature: value };
-        break;
-      case MQTT_TOPIC.FLAME:
-        obj = { flame: value };
-        break;
-      default:
-        break;
-    }
-    setLatestData(obj);
   };
 
   const setupMqttClient = async () => {
