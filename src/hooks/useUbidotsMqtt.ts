@@ -66,11 +66,8 @@ export const useUbidotsMqtt = () => {
 
       mqttClient.on("message", (msg: Message) => {
         if (![MQTT_TOPIC.IS_DEVICE_ACTIVE, MQTT_TOPIC.HAS_GAS_LEAK].includes(msg.topic)) {
-          handleSensorData(msg);
-        }
-
-        if (msg.topic === MQTT_TOPIC.IS_DEVICE_ACTIVE) {
           setIsConnected(true);
+          handleSensorData(msg);
         }
 
         if (msg.topic === MQTT_TOPIC.HAS_GAS_LEAK) {
@@ -83,7 +80,6 @@ export const useUbidotsMqtt = () => {
 
         mqttClient.subscribe(MQTT_TOPIC.FLAME, 1);
         mqttClient.subscribe(MQTT_TOPIC.GAS, 1);
-        mqttClient.subscribe(MQTT_TOPIC.IS_DEVICE_ACTIVE, 1);
       });
 
       mqttClient.connect();
