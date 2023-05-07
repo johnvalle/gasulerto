@@ -175,16 +175,22 @@ const cleanupUbidots = () => {
     temperature: "63f88ecb7fea6c000cd8f059"
   };
   return Object.values(variableKeys).forEach(value => {
-    return axios.post(
-      `https://industrial.api.ubidots.com/api/v2.0/variables/${value}/_/values/delete/`,
-      {},
-      {
-        params: {
-          token: functions.config().ubidots.token,
-          startDate: dayjs().startOf("day").valueOf(),
-          endDate: dayjs().endOf("day").valueOf()
+    axios
+      .post(
+        `https://industrial.api.ubidots.com/api/v2.0/variables/${value}/_/values/delete/`,
+        {},
+        {
+          params: {
+            token: functions.config().ubidots.token,
+            startDate: dayjs().startOf("day").valueOf(),
+            endDate: dayjs().endOf("day").valueOf()
+          }
         }
-      }
-    );
+      )
+      .then(result => {
+        console.log({ cleanupId: result.data.task, params: result.request?.path });
+        return;
+      })
+      .catch(err => console.error("Failed to cleanup ubidots: ", err));
   });
 };
