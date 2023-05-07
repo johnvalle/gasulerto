@@ -38,8 +38,10 @@ export const Dashboard = React.memo(() => {
     state.lastActive
   ]);
 
-  const humidityQuery = useQuery(["humidity"], getLastHumidityData, { refetchInterval: 1000 * 30 });
-  const temperatureQuery = useQuery(["temperature"], getLastTemperatureData, { refetchInterval: 1000 * 30 });
+  const humidityQuery = useQuery(["humidity"], getLastHumidityData, { refetchInterval: 1000 * 3 });
+  const temperatureQuery = useQuery(["temperature"], getLastTemperatureData, { refetchInterval: 1000 * 3 });
+  const hasTemperatureData = temperatureQuery.data?.results && temperatureQuery.data?.results.length > 0;
+  const hasHumidityData = humidityQuery.data?.results && humidityQuery.data?.results.length > 0;
 
   const isPageReady = isConnected && !humidityQuery.isLoading && !temperatureQuery.isLoading && !!threshold;
 
@@ -145,25 +147,29 @@ export const Dashboard = React.memo(() => {
                     title="Gas"
                     iconName="gas-cylinder"
                     iconColor={theme.colors.warning}
-                    value={`${latestData.gas} ${MEASUREMENTS.GAS}`}
+                    value={Number.isNaN(latestData.gas) ? "-" : `${latestData.gas} ${MEASUREMENTS.GAS}`}
                   />
                   <SensorListItem
                     title="Fire"
                     iconName="fire"
                     iconColor={theme.colors.danger}
-                    value={getFireDescriptiveValue(latestData.flame).value}
+                    value={Number.isNaN(latestData.flame) ? "-" : getFireDescriptiveValue(latestData.flame).value}
                   />
                   <SensorListItem
                     title="Temperature"
                     iconName="thermometer"
                     iconColor={theme.colors.success}
-                    value={`${temperatureQuery.data?.results[0].value} ${MEASUREMENTS.TEMPERATURE}`}
+                    value={
+                      hasTemperatureData
+                        ? `${temperatureQuery.data?.results[0]?.value} ${MEASUREMENTS.TEMPERATURE}`
+                        : "-"
+                    }
                   />
                   <SensorListItem
                     title="Humidity"
                     iconName="water"
                     iconColor={theme.colors.primaryDark}
-                    value={`${humidityQuery.data?.results[0].value} ${MEASUREMENTS.HUMIDITY}`}
+                    value={hasHumidityData ? `${humidityQuery.data?.results[0]?.value} ${MEASUREMENTS.HUMIDITY}` : "-"}
                   />
                 </>
               ) : (
@@ -195,13 +201,21 @@ export const Dashboard = React.memo(() => {
                       iconName="thermometer"
                       title="Temperature"
                       idealRange="med"
-                      {...getTemperatureDescriptiveValue(temperatureQuery.data?.results[0].value ?? 0)}
+                      {...getTemperatureDescriptiveValue(
+                        temperatureQuery.data?.results && temperatureQuery.data?.results.length > 0
+                          ? temperatureQuery.data?.results[0]?.value
+                          : Number.NaN
+                      )}
                     />
                     <SensorCardItem
                       iconName="water"
                       title="Humidity"
                       idealRange="med"
-                      {...getHumidityDescriptiveValue(humidityQuery.data?.results[0].value ?? 0)}
+                      {...getHumidityDescriptiveValue(
+                        humidityQuery.data?.results && humidityQuery.data?.results.length > 0
+                          ? humidityQuery.data?.results[0]?.value
+                          : Number.NaN
+                      )}
                     />
                   </Box>
                 </>

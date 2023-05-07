@@ -14,7 +14,6 @@ export const getSensorDescriptiveValue = (
   value: number
 ): { value: string; range?: SensorRange } => {
   const { low, med, high } = config;
-
   if (value <= low.range[0] || value <= low.range[1]) {
     return {
       value: low.description,
@@ -37,7 +36,8 @@ export const getSensorDescriptiveValue = (
   }
 
   return {
-    value: ""
+    value: "-",
+    range: undefined
   };
 };
 
@@ -63,6 +63,13 @@ export const getGasDescriptiveValue = (value: number) => {
 };
 
 export const getFireDescriptiveValue = (value: number) => {
+  if (Number.isNaN(value)) {
+    return {
+      value: "-",
+      range: undefined
+    };
+  }
+
   if (value === 0) {
     return {
       value: "Fire detected",

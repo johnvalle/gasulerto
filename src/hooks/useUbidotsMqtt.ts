@@ -12,31 +12,36 @@ export const useUbidotsMqtt = () => {
   const { lastActive, setLastActive, setHasGasLeak, setLatestData, setIsConnected } = useUbidotsStore.getState();
 
   const handleSensorData = (msg: Message) => {
-    let obj = {} as Partial<UbidotsStore["latestData"]>;
+    try {
+      let obj = {} as Partial<UbidotsStore["latestData"]>;
+      const data = typeof msg.data === "string" && !!msg.data ? JSON.parse(msg.data) : {};
+      const time = data.timestamp;
+      const isSavedDataOld = dayjs(lastActive).isBefore(time);
+      if (isSavedDataOld || !lastActive) {
+        setLastActive(time);
+      }
 
-    const time = JSON.parse(msg.data).timestamp;
-    const isSavedDataOld = dayjs(lastActive).isBefore(JSON.parse(msg.data).timestamp);
-    if (isSavedDataOld || !lastActive) {
-      setLastActive(time);
+      const value = Number(data.value);
+      switch (msg.topic) {
+        case MQTT_TOPIC.GAS:
+          obj = { gas: value };
+          break;
+        case MQTT_TOPIC.HUMIDITY:
+          obj = { humidity: value };
+          break;
+        case MQTT_TOPIC.TEMPERATURE:
+          obj = { temperature: value };
+          break;
+        case MQTT_TOPIC.FLAME:
+          obj = { flame: value };
+          break;
+        default:
+          break;
+      }
+      setLatestData(obj);
+    } catch (error) {
+      console.error({ error });
     }
-    const data = Number(JSON.parse(msg.data).value);
-    switch (msg.topic) {
-      case MQTT_TOPIC.GAS:
-        obj = { gas: data };
-        break;
-      case MQTT_TOPIC.HUMIDITY:
-        obj = { humidity: data };
-        break;
-      case MQTT_TOPIC.TEMPERATURE:
-        obj = { temperature: data };
-        break;
-      case MQTT_TOPIC.FLAME:
-        obj = { flame: data };
-        break;
-      default:
-        break;
-    }
-    setLatestData(obj);
   };
 
   const setupMqttClient = async () => {
@@ -61,11 +66,8 @@ export const useUbidotsMqtt = () => {
 
       mqttClient.on("message", (msg: Message) => {
         if (![MQTT_TOPIC.IS_DEVICE_ACTIVE, MQTT_TOPIC.HAS_GAS_LEAK].includes(msg.topic)) {
-          handleSensorData(msg);
-        }
-
-        if (msg.topic === MQTT_TOPIC.IS_DEVICE_ACTIVE) {
           setIsConnected(true);
+          handleSensorData(msg);
         }
 
         if (msg.topic === MQTT_TOPIC.HAS_GAS_LEAK) {
@@ -78,7 +80,6 @@ export const useUbidotsMqtt = () => {
 
         mqttClient.subscribe(MQTT_TOPIC.FLAME, 1);
         mqttClient.subscribe(MQTT_TOPIC.GAS, 1);
-        mqttClient.subscribe(MQTT_TOPIC.IS_DEVICE_ACTIVE, 1);
       });
 
       mqttClient.connect();
