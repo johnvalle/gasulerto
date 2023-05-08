@@ -34,7 +34,7 @@ export const Settings = React.memo(() => {
 
   return (
     <Wrapper>
-      <ScrollView style={{ width: "100%" }}>
+      <ScrollView style={{ width: "100%", marginBottom: 80 }}>
         <KeyboardAvoidingView>
           <Box gap="sm" flex={1} width="100%">
             <Image source={SettingsPageBanner} style={styles.imageBanner} resizeMode="contain" />
