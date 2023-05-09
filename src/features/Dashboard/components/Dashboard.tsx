@@ -90,7 +90,7 @@ export const Dashboard = React.memo(() => {
       aggregation: "mean",
       period: `${timeResample}T`,
       join_dataframes: true,
-      start: dayjs().startOf("day").valueOf()
+      start: dayjs().tz("Asia/Manila").startOf("day").valueOf()
     });
   }, [timeResample]);
 
