@@ -1,0 +1,14 @@
+[debug] [2023-05-09T16:45:11.268Z] ----------------------------------------------------------------------
+[debug] [2023-05-09T16:45:11.269Z] Command:       /Users/jvalle/.nvm/versions/node/v16.13.2/bin/node /Users/jvalle/.nvm/versions/node/v16.13.2/bin/firebase functions:shell
+[debug] [2023-05-09T16:45:11.270Z] CLI Version:   11.23.1
+[debug] [2023-05-09T16:45:11.270Z] Platform:      darwin
+[debug] [2023-05-09T16:45:11.270Z] Node Version:  v16.13.2
+[debug] [2023-05-09T16:45:11.271Z] Time:          Wed May 10 2023 00:45:11 GMT+0800 (Philippine Standard Time)
+[debug] [2023-05-09T16:45:11.271Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2023-05-09T16:45:11.320Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2023-05-09T16:45:11.320Z] > authorizing via signed-in user (j.valle.488230@umindanao.edu.ph)
+[debug] [2023-05-09T16:45:11.320Z] [iam] checking project gasulerto for permissions ["firebase.projects.get"]
+[debug] [2023-05-09T16:45:11.322Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/gasulerto:testIamPermissions [none]
+[debug] [2023-05-09T16:45:11.322Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/gasulerto:testIamPermissions x-goog-quota-user=projects/gasulerto
+[debug] [2023-05-09T16:45:11.322Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/gasulerto:testIamPermissions {"permissions":["firebase.projects.get"]}
