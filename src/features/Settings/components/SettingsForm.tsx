@@ -51,7 +51,7 @@ export const SettingsForm = (props: Props) => {
         defaultValue={userSettings?.threshold}
         render={({ field: { value } }) => {
           const label = "Gas leak threshold";
-          const helperText = "Alarms when threshold is exceeded";
+          const helperText = "Lower value indicates early alarms";
           return isAnonymous ? (
             renderFixedContent({ label, helperText, value: `${value} PPM` })
           ) : (
