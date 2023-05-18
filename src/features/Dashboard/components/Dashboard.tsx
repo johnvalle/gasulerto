@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Alert, ScrollView, StyleSheet } from "react-native";
+import { Alert, RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useMutation, useQuery } from "react-query";
@@ -96,7 +96,11 @@ export const Dashboard = React.memo(() => {
 
   return (
     <Wrapper>
-      <ScrollView style={{ flex: 1, width: "100%" }}>
+      <ScrollView
+        style={{ flex: 1, width: "100%" }}
+        refreshControl={
+          <RefreshControl refreshing={dataResampleMutation.isLoading} onRefresh={() => setTimeResample(timeResample)} />
+        }>
         <Box gap="sm">
           <Box flex={1} flexDirection="row" justifyContent="space-between" alignItems="center">
             <Text variant="largeMedium" color="black">
@@ -119,7 +123,7 @@ export const Dashboard = React.memo(() => {
           {isPageReady && !dataResampleMutation.isLoading && memoizedChart ? (
             <>
               <Box>
-                <Text color="black">Gas PPM </Text>
+                <Text color="black">Gas levels</Text>
                 <Text color="gray">Averaged every {timeResample} minutes</Text>
               </Box>
               <SensorDataChart
