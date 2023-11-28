@@ -51,7 +51,7 @@ export const Login = () => {
         justifyContent="space-between"
         paddingTop="xl"
         paddingHorizontal="md"
-        paddingBottom="2xl">
+        paddingBottom="md">
         <Text variant="extraLargeBold" color="primaryDark" textAlign="center">
           Gasulerto
         </Text>

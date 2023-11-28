@@ -66,6 +66,7 @@ export const useAuth = () => {
     try {
       if (token) {
         await auth().signOut();
+        await GoogleSignin.signOut();
         await pushy.removePreviousSubscriptions();
       }
       logOut();

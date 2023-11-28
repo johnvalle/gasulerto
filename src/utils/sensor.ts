@@ -112,7 +112,7 @@ export const getTemperatureDescriptiveValue = (value: number) => {
       description: "Cool to Warm"
     },
     high: {
-      range: [50, 100],
+      range: [51, 100],
       description: "Hot"
     }
   };

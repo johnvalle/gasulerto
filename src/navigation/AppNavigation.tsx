@@ -1,5 +1,7 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import React, { useEffect, useState } from "react";
 import { Alert } from "react-native";
 
@@ -19,6 +21,8 @@ import { navigationRef } from "./RootNavigation";
 import UnauthenticatedStack from "./UnauthenticatedStack";
 
 dayjs.extend(relativeTime);
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export const AppNavigation = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

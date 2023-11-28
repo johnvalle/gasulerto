@@ -1,16 +1,15 @@
 import dayjs from "dayjs";
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Alert, ScrollView, StyleSheet } from "react-native";
+import React, { useContext, useState } from "react";
+import { Alert, RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useMutation, useQuery } from "react-query";
 
 import { Box, Text, Wrapper } from "@core/components";
-import { VARIABLE_ID } from "@core/constants/api";
 import { MEASUREMENTS } from "@core/constants/sensor";
 import theme from "@core/constants/theme";
 import { LoadingContext } from "@core/contexts/LoadingContext";
 import { useAuth, useUserStore } from "@core/hooks";
+import { useHumidityTemperatureQuery } from "@core/hooks/useHumidityTemperatureQuery";
 import { useUbidotsStore } from "@core/hooks/useUbidotsStore";
 import {
   getFireDescriptiveValue,
@@ -19,9 +18,6 @@ import {
   getTemperatureDescriptiveValue
 } from "@core/utils/sensor";
 
-import { getUbidotsDataResample } from "../api/getUbidotsDataResample";
-import { getLastHumidityData } from "../api/getUbidotsHumidity";
-import { getLastTemperatureData } from "../api/getUbidotsTemperature";
 import { ChartTimePills } from "./ChartTimePills";
 import { SensorCardItem } from "./SensorCardItem";
 import { SensorDataChart } from "./SensorDataChart";
@@ -29,6 +25,8 @@ import { SensorListItem } from "./SensorListItem";
 import * as Skeleton from "./Skeleton";
 
 export const Dashboard = React.memo(() => {
+  const [timeResample, setTimeResample] = useState(5);
+  // hooks
   const { name, threshold, expiresOn, isAnonymous } = useUserStore();
   const { setIsLoading } = useContext(LoadingContext);
   const { signOut } = useAuth();
@@ -38,30 +36,28 @@ export const Dashboard = React.memo(() => {
     state.lastActive
   ]);
 
-  const humidityQuery = useQuery(["humidity"], getLastHumidityData, { refetchInterval: 1000 * 3 });
-  const temperatureQuery = useQuery(["temperature"], getLastTemperatureData, { refetchInterval: 1000 * 3 });
-  const hasTemperatureData = temperatureQuery.data?.results && temperatureQuery.data?.results.length > 0;
-  const hasHumidityData = humidityQuery.data?.results && humidityQuery.data?.results.length > 0;
+  const {
+    humidityQuery,
+    temperatureQuery,
+    hasHumidityData,
+    hasTemperatureData,
+    dataResampleMutation,
+    memoizedChart,
+    updateChart
+  } = useHumidityTemperatureQuery();
+
+  const updateChartResample = (time: number) => {
+    setTimeResample(time);
+    updateChart(time);
+  };
 
   const isPageReady = isConnected && !humidityQuery.isLoading && !temperatureQuery.isLoading && !!threshold;
-
   const isMoreThanMinuteInactive = Boolean(dayjs().diff(dayjs(lastActive), "m"));
-  const dataResampleMutation = useMutation(getUbidotsDataResample);
-  const [timeResample, setTimeResample] = useState(5);
-
-  const memoizedChart = useMemo(() => {
-    if (!dataResampleMutation.isLoading && dataResampleMutation.data) {
-      return {
-        data: dataResampleMutation.data?.results.map(item => Number(item[1])),
-        labels: dataResampleMutation.data?.results.map(item => Number(item[0]))
-      };
-    }
-  }, [dataResampleMutation.data, dataResampleMutation.isLoading]);
-
   const baseMessage = "Are you sure you want to logout?";
   const confirmationMessage = !isAnonymous
     ? baseMessage
     : `${baseMessage} You may stay logged in as a guest for ${dayjs(expiresOn).toNow(true)}.`;
+
   const confirmLogout = () =>
     Alert.alert(
       "Logout",
@@ -84,19 +80,14 @@ export const Dashboard = React.memo(() => {
       }
     );
 
-  useEffect(() => {
-    dataResampleMutation.mutateAsync({
-      variables: [VARIABLE_ID.GAS],
-      aggregation: "mean",
-      period: `${timeResample}T`,
-      join_dataframes: true,
-      start: dayjs().startOf("day").valueOf()
-    });
-  }, [timeResample]);
-
   return (
     <Wrapper>
-      <ScrollView style={{ flex: 1, width: "100%" }}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{ flex: 1, width: "100%" }}
+        refreshControl={
+          <RefreshControl refreshing={dataResampleMutation.isLoading} onRefresh={() => updateChart(timeResample)} />
+        }>
         <Box gap="sm">
           <Box flex={1} flexDirection="row" justifyContent="space-between" alignItems="center">
             <Text variant="largeMedium" color="black">
@@ -114,12 +105,12 @@ export const Dashboard = React.memo(() => {
             defaultSelectedTime={timeResample}
             isDisabled={dataResampleMutation.isLoading}
             isLoading={dataResampleMutation.isLoading}
-            onClick={setTimeResample}
+            onClick={updateChartResample}
           />
           {isPageReady && !dataResampleMutation.isLoading && memoizedChart ? (
             <>
               <Box>
-                <Text color="black">Gas PPM </Text>
+                <Text color="black">Gas levels</Text>
                 <Text color="gray">Averaged every {timeResample} minutes</Text>
               </Box>
               <SensorDataChart

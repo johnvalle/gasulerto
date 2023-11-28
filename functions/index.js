@@ -4,7 +4,15 @@ const functions = require("firebase-functions");
 // The Firebase Admin SDK to access Firestore.
 const admin = require("firebase-admin");
 const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
 const axios = require("axios").default;
+
+dayjs.extend(utc);
+
+console.log({
+  startTime: dayjs().startOf("day").valueOf(),
+  startTimeOffset: dayjs().utcOffset(8).startOf("day").valueOf()
+});
 
 // Make sure to get local config `firebase functions:config:get > .runtimeconfig.json`
 
@@ -182,8 +190,8 @@ const cleanupUbidots = () => {
         {
           params: {
             token: functions.config().ubidots.token,
-            startDate: dayjs().startOf("day").valueOf(),
-            endDate: dayjs().endOf("day").valueOf()
+            startDate: dayjs().utcOffset(8).startOf("day").valueOf(),
+            endDate: dayjs().utcOffset(8).endOf("day").valueOf()
           }
         }
       )

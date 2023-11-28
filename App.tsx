@@ -1,4 +1,5 @@
 import React from "react";
+import { connectToDevTools } from "react-devtools-core";
 import { StatusBar } from "react-native";
 import { ThemeProvider as MagnusUIProvider } from "react-native-magnus";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -12,6 +13,10 @@ import theme from "@constants/theme";
 
 export default function App() {
   const queryClient = new QueryClient();
+  connectToDevTools({
+    host: "localhost",
+    port: 8097
+  });
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>

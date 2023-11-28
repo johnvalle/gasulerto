@@ -42,41 +42,44 @@ export const Alarm = ({ navigation, route: { params } }: ScreenProps<AppScreen.A
 
   return (
     <Wrapper>
-      <Box justifyContent="center" alignItems="center">
-        <Text variant="extraLargeBold" color="danger" marginVertical="sm">
-          Warning
-        </Text>
-        <Text variant="largeMedium" color="black" textAlign="center">
-          {params?.message ?? "Gas leakage has been detected."}
-        </Text>
-
-        <Image source={GasDetected} style={styles.bannerImage} resizeMode="contain" />
-        <Box flexDirection="column" alignItems="center" gap="sm">
-          <Box>
-            <Text variant="mediumRegular" color="black" textAlign="center">
-              Are you currently away from home?
-            </Text>
-            <Text variant="mediumBold" color="black" textAlign="center">
-              Call {userSettings?.primaryContact.name}
-            </Text>
-          </Box>
-          <TouchableOpacity style={styles.callButton} onPress={callPrimaryContact}>
-            <Icon name="phone" size={theme.spacing.md} color={theme.colors.white} />
-          </TouchableOpacity>
-        </Box>
-        <Text color="gray" textAlign="center" mt="md">
-          If this was caused by a false alarm or the leakage has been attended to, please click close
-        </Text>
-        <Button
-          mt="md"
-          bg="white"
-          alignSelf="center"
-          suffix={<Icon name="close" size={theme.spacing.md} color={theme.colors.gray} />}
-          onPress={cancelAlarm}>
-          <Text color="gray" variant="mediumBold">
-            Close
+      <Box justifyContent="space-around" flex={1}>
+        <Box justifyContent="center" alignItems="center">
+          <Text variant="extraLargeBold" color="danger" marginVertical="sm">
+            Warning
           </Text>
-        </Button>
+          <Text variant="largeMedium" color="black" textAlign="center">
+            {params?.message ?? "Gas leakage has been detected."}
+          </Text>
+        </Box>
+        <Image source={GasDetected} style={styles.bannerImage} resizeMode="contain" />
+        <Box>
+          <Box flexDirection="column" alignItems="center" gap="sm">
+            <Box>
+              <Text variant="mediumRegular" color="black" textAlign="center">
+                Are you currently away from home?
+              </Text>
+              <Text variant="mediumBold" color="black" textAlign="center">
+                Call {userSettings?.primaryContact.name}
+              </Text>
+            </Box>
+            <TouchableOpacity style={styles.callButton} onPress={callPrimaryContact}>
+              <Icon name="phone" size={theme.spacing.md} color={theme.colors.white} />
+            </TouchableOpacity>
+          </Box>
+          <Text color="gray" textAlign="center" mt="md">
+            If this was caused by a false alarm or the leakage has been attended to, please click close
+          </Text>
+          <Button
+            mt="md"
+            bg="white"
+            alignSelf="center"
+            suffix={<Icon name="close" size={theme.spacing.md} color={theme.colors.gray} />}
+            onPress={cancelAlarm}>
+            <Text color="gray" variant="mediumBold">
+              Close
+            </Text>
+          </Button>
+        </Box>
       </Box>
     </Wrapper>
   );
@@ -90,6 +93,6 @@ const styles = StyleSheet.create({
   },
   bannerImage: {
     width: 380,
-    height: 400
+    height: 300
   }
 });
