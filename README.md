@@ -23,6 +23,20 @@ To achieve the general objective of the study, the research specifically aims to
 
 ## Software
 
+### Conceptual Framework
+
+<img src="./Conceptual Framework (3).png" width="400">
+
+### Exponential moving average
+
+$$
+EMA_c = (Value_c* k)+ (EMA_p*(1-k))
+$$
+
+$$
+k=2n+1
+$$
+
 ### Mobile application
 
 Built using:
@@ -44,5 +58,6 @@ Built using:
 
 ## Hardware
 
-![schematic diagram of the IoT](<Conceptual Framework (1).png>)
+<img src="./Conceptual Framework (1).png" width="400">
+
 The hardware component of the study will have two (2) LEDS and a buzzer as actuators as displayed in Figure. To enable internet connectivity, a built-in ESP8266 WiFi module in the microcontroller is used. The sensing components are an MQ5 gas sensor which will primarily gather the LPG data. The flame, temperature, and humidity sensors will serve as secondary sensors that will provide users with additional information about the environment in which the component is placed.
