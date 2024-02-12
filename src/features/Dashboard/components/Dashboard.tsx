@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Alert, RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { Button } from "react-native-magnus";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -80,6 +80,12 @@ export const Dashboard = React.memo(() => {
       }
     );
 
+  useEffect(() => {
+    if (isPageReady && !dataResampleMutation.isLoading && !memoizedChart) {
+      Alert.alert("Oops!", "Servers are currently offline.");
+    }
+  }, [isPageReady, dataResampleMutation.isLoading, memoizedChart]);
+
   return (
     <Wrapper>
       <ScrollView
@@ -107,15 +113,15 @@ export const Dashboard = React.memo(() => {
             isLoading={dataResampleMutation.isLoading}
             onClick={updateChartResample}
           />
-          {isPageReady && !dataResampleMutation.isLoading && memoizedChart ? (
+          {isPageReady && !dataResampleMutation.isLoading ? (
             <>
               <Box>
                 <Text color="black">Gas levels</Text>
                 <Text color="gray">Averaged every {timeResample} minutes</Text>
               </Box>
               <SensorDataChart
-                chartLabels={memoizedChart.labels}
-                chartData={memoizedChart.data}
+                chartLabels={memoizedChart ? memoizedChart.labels : []}
+                chartData={memoizedChart ? memoizedChart?.data : []}
                 chartSymbolSuffix="PPM"
               />
             </>
